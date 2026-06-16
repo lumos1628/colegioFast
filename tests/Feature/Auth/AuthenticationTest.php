@@ -17,7 +17,7 @@ test('users can authenticate using the login screen', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('admin', absolute: false));
 });
 
 test('users can not authenticate with invalid password', function () {
@@ -26,6 +26,15 @@ test('users can not authenticate with invalid password', function () {
     $this->post('/login', [
         'email' => $user->email,
         'password' => 'wrong-password',
+    ]);
+
+    $this->assertGuest();
+});
+
+test('users can not authenticate with invalid email', function () {
+    $this->post('/login', [
+        'email' => 'nonexistent@example.com',
+        'password' => 'password',
     ]);
 
     $this->assertGuest();
