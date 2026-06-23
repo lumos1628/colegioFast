@@ -48,7 +48,7 @@ it('redirects docente to docente dashboard', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('docente', absolute: false));
+    $response->assertRedirect(route('docente.dashboard', absolute: false));
 });
 
 it('redirects alumno to alumno dashboard', function () {

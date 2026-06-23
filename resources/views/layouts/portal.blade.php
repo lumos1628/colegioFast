@@ -9,7 +9,7 @@
 </head>
 <body>
     <nav>
-        <a href="{{ route('docente') }}">Docente</a> |
+        <a href="{{ route('docente.dashboard') }}">Docente</a> |
         <a href="{{ route('alumno') }}">Alumno</a> |
         <a href="{{ route('padre') }}">Padre</a> |
         <a href="{{ route('psicologo') }}">Psicólogo</a>

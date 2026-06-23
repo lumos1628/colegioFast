@@ -7,23 +7,21 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreNotaRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            //
+            'notas' => 'required|array',
+            'notas.*.alumno_id' => 'required|exists:alumnos,id',
+            'notas.*.calificacion' => 'required|in:AD,A,B,C',
+            'notas.*.observacion' => 'nullable|string',
         ];
     }
 }

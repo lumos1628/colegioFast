@@ -8,6 +8,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -37,5 +38,20 @@ class User extends Authenticatable
         return $this->role instanceof UserRole
             ? route($this->role->redirectRoute(), absolute: false)
             : route('dashboard', absolute: false);
+    }
+
+    public function docente(): HasOne
+    {
+        return $this->hasOne(Docente::class);
+    }
+
+    public function alumno(): HasOne
+    {
+        return $this->hasOne(Alumno::class);
+    }
+
+    public function padre(): HasOne
+    {
+        return $this->hasOne(Padre::class);
     }
 }

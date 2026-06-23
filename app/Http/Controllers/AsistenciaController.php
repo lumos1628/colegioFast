@@ -3,64 +3,56 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAsistenciaRequest;
-use App\Http\Requests\UpdateAsistenciaRequest;
+use App\Models\Asignacion;
 use App\Models\Asistencia;
+use App\Models\Matricula;
+use Illuminate\Http\Request;
 
 class AsistenciaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Asignacion $asignacion, Request $request)
     {
-        //
+        $docente = auth()->user()->docente;
+        abort_if(! $docente || $asignacion->docente_id !== $docente->id, 403);
+
+        $fecha = $request->input('fecha', now()->format('Y-m-d'));
+
+        $alumnos = Matricula::where('asignacion_id', $asignacion->id)
+            ->with('alumno')
+            ->get()
+            ->pluck('alumno');
+
+        $asistencias = Asistencia::where('asignacion_id', $asignacion->id)
+            ->where('fecha', $fecha)
+            ->get()
+            ->keyBy('alumno_id');
+
+        return view('docente.asistencia.index', compact('asignacion', 'alumnos', 'asistencias', 'fecha'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(StoreAsistenciaRequest $request, Asignacion $asignacion)
     {
-        //
-    }
+        $docente = auth()->user()->docente;
+        abort_if(! $docente || $asignacion->docente_id !== $docente->id, 403);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreAsistenciaRequest $request)
-    {
-        //
-    }
+        $fecha = $request->fecha;
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Asistencia $asistencia)
-    {
-        //
-    }
+        foreach ($request->asistencias as $asistenciaData) {
+            Asistencia::updateOrCreate(
+                [
+                    'asignacion_id' => $asignacion->id,
+                    'alumno_id' => $asistenciaData['alumno_id'],
+                    'fecha' => $fecha,
+                ],
+                [
+                    'estado' => $asistenciaData['estado'],
+                    'observacion' => $asistenciaData['observacion'] ?? null,
+                ]
+            );
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Asistencia $asistencia)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateAsistenciaRequest $request, Asistencia $asistencia)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Asistencia $asistencia)
-    {
-        //
+        return redirect()
+            ->route('docente.cursos.asistencia.index', [$asignacion, 'fecha' => $fecha])
+            ->with('success', 'Asistencia guardada correctamente');
     }
 }

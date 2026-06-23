@@ -7,23 +7,22 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreAsistenciaRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            //
+            'fecha' => 'required|date',
+            'asistencias' => 'required|array',
+            'asistencias.*.alumno_id' => 'required|exists:alumnos,id',
+            'asistencias.*.estado' => 'required|in:presente,tardanza,ausente,justificado',
+            'asistencias.*.observacion' => 'nullable|string',
         ];
     }
 }

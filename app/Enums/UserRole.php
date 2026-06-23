@@ -31,7 +31,7 @@ enum UserRole: string
             self::Admin => 'admin',
             self::Director => 'director',
             self::Secretaria => 'secretaria',
-            self::Docente => 'docente',
+            self::Docente => 'docente.dashboard',
             self::Alumno => 'alumno',
             self::Padre => 'padre',
             self::Psicologo => 'psicologo',
