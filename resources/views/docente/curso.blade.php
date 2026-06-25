@@ -1,63 +1,143 @@
-<x-portal-layout>
-    <div class="max-w-4xl mx-auto py-8 px-4">
-        <a href="{{ route('docente.dashboard') }}" class="text-blue-600 hover:underline mb-4 inline-block">
-            ← Volver a mis cursos
-        </a>
+<x-docente-layout :docente="$docente" :cursos-por-dia="$cursosPorDia">
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        {{-- Breadcrumb --}}
+        <x-breadcrumb :items="[
+            ['label' => 'Mis Cursos', 'url' => route('docente.dashboard')],
+            ['label' => $asignacion->curso->nombre . ' ' . $asignacion->curso->grado . '°' . $asignacion->curso->seccion]
+        ]" />
 
-        <h1 class="text-3xl font-bold mb-2">{{ $asignacion->curso->nombre }}</h1>
-        <p class="text-gray-600 mb-2">
-            {{ $asignacion->curso->grado }} - {{ $asignacion->curso->seccion }}
-        </p>
-        <p class="text-sm text-gray-500 mb-4">
-            Periodo: {{ $asignacion->periodoAcademico->nombre }}
-        </p>
-
-        <div class="flex gap-3 mb-6">
-            <a href="{{ route('docente.cursos.actividades.index', $asignacion) }}"
-               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-                Gestionar actividades
-            </a>
-            <a href="{{ route('docente.cursos.asistencia.index', $asignacion) }}"
-               class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
-                Registrar asistencia
-            </a>
+        {{-- Header --}}
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">{{ $asignacion->curso->nombre }}</h1>
+                    <p class="mt-1 text-sm text-gray-500">
+                        {{ $asignacion->curso->grado }}° "{{ $asignacion->curso->seccion }}" • {{ $asignacion->periodoAcademico->nombre }}
+                    </p>
+                </div>
+                <div class="flex gap-3">
+                    <x-button variant="primary" :href="route('docente.cursos.actividades.index', $asignacion)">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        Actividades
+                    </x-button>
+                    <x-button variant="success" :href="route('docente.cursos.asistencia.index', $asignacion)">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Asistencia
+                    </x-button>
+                </div>
+            </div>
         </div>
 
-        <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <div class="border-b border-gray-200 px-6 py-4">
-                <h2 class="text-xl font-semibold mb-3">
-                    Alumnos Matriculados ({{ $asignacion->matriculas->count() }})
-                </h2>
-                <input type="text" id="buscar-alumno" placeholder="Buscar por nombre o DNI..."
-                       class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+        {{-- Layout de dos columnas --}}
+        <div class="flex gap-8">
+            {{-- Columna izquierda: Lista de alumnos --}}
+            <div class="flex-1 min-w-0">
+                <x-card title="Alumnos Matriculados" :subtitle="$asignacion->matriculas->count() . ' alumnos registrados'">
+                    {{-- Search Input --}}
+                    <div class="mb-4">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <input type="text" id="buscar-alumno" placeholder="Buscar por nombre o DNI..."
+                                   class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out">
+                        </div>
+                    </div>
+
+                    @if($asignacion->matriculas->isEmpty())
+                        <x-alert type="info">
+                            No hay alumnos matriculados en este curso.
+                        </x-alert>
+                    @else
+                        <div class="overflow-hidden">
+                            <ul class="divide-y divide-gray-200" id="lista-alumnos">
+                                @foreach($asignacion->matriculas as $matricula)
+                                    <li class="alumno-item hover:bg-gray-50 transition-colors"
+                                        data-nombre="{{ strtolower($matricula->alumno->nombres . ' ' . $matricula->alumno->apellido_paterno . ' ' . $matricula->alumno->apellido_materno) }}"
+                                        data-dni="{{ $matricula->alumno->dni }}">
+                                        <a href="{{ route('docente.cursos.alumnos.show', [$asignacion, $matricula->alumno]) }}" class="block px-4 py-4">
+                                            <div class="flex items-center">
+                                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold text-sm">
+                                                    {{ substr($matricula->alumno->nombres, 0, 1) }}{{ substr($matricula->alumno->apellido_paterno, 0, 1) }}
+                                                </div>
+                                                <div class="ml-4 flex-1">
+                                                    <p class="text-sm font-medium text-gray-900">
+                                                        {{ $matricula->alumno->nombres }} {{ $matricula->alumno->apellido_paterno }} {{ $matricula->alumno->apellido_materno }}
+                                                    </p>
+                                                    <p class="text-sm text-gray-500">
+                                                        DNI: {{ $matricula->alumno->dni }}
+                                                    </p>
+                                                </div>
+                                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </div>
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                </x-card>
             </div>
 
-            @if($asignacion->matriculas->isEmpty())
-                <div class="p-6">
-                    <p class="text-gray-500">No hay alumnos matriculados en este curso.</p>
+            {{-- Columna derecha: Estadísticas --}}
+            <div class="w-80 shrink-0 sticky top-8 self-start">
+                <div class="space-y-4">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Alumnos</p>
+                                <p class="text-2xl font-semibold text-gray-900">{{ $asignacion->matriculas->count() }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Actividades</p>
+                                <p class="text-2xl font-semibold text-gray-900">{{ $asignacion->actividades->count() }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Promedio General</p>
+                                <p class="text-2xl font-semibold text-gray-900">
+                                    @php
+                                        $promedio = $asignacion->matriculas->flatMap->alumno->flatMap->notas->avg(fn($nota) => $nota->calificacion->numericValue());
+                                    @endphp
+                                    {{ $promedio ? number_format($promedio, 1) : 'N/A' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            @else
-                <ul class="divide-y divide-gray-200" id="lista-alumnos">
-                    @foreach($asignacion->matriculas as $matricula)
-                        <li class="px-6 py-4 hover:bg-gray-50 alumno-item"
-                            data-nombre="{{ strtolower($matricula->alumno->nombres . ' ' . $matricula->alumno->apellido_paterno . ' ' . $matricula->alumno->apellido_materno) }}"
-                            data-dni="{{ $matricula->alumno->dni }}">
-                            <a href="{{ route('docente.cursos.alumnos.show', [$asignacion, $matricula->alumno]) }}"
-                               class="block">
-                                <p class="font-medium">
-                                    {{ $matricula->alumno->nombres }}
-                                    {{ $matricula->alumno->apellido_paterno }}
-                                    {{ $matricula->alumno->apellido_materno }}
-                                </p>
-                                <p class="text-sm text-gray-500">
-                                    DNI: {{ $matricula->alumno->dni }} |
-                                    Grado: {{ $matricula->alumno->grado }}
-                                </p>
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            @endif
+            </div>
         </div>
     </div>
 
@@ -71,4 +151,4 @@
             });
         });
     </script>
-</x-portal-layout>
+</x-docente-layout>

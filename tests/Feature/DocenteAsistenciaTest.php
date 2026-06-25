@@ -187,5 +187,5 @@ test('vista de curso incluye link a asistencia', function () {
         ->get(route('docente.cursos.show', $asignacion));
 
     $response->assertOk();
-    $response->assertSee('Registrar asistencia');
+    $response->assertSee('Asistencia');
 });

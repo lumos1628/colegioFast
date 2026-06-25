@@ -104,18 +104,35 @@ desarrollado y el que más debe sentirse simple e intuitivo.
 
 ## 5. Estado actual del proyecto
 
-- [x] **Migraciones + seeders** — completo y verificado (18 migraciones,
+- [x] **Migraciones + seeders** — completo y verificado (19 migraciones,
       18 seeders, 64 tests pasando, trigger de auditoría verificado con
       UPDATE real, VIEW `notas_bimestrales` devuelve datos correctos)
 - [x] **Modelos Eloquent** — completo (16 modelos, relaciones, $fillable,
       $casts)
 - [x] **Rutas + controladores Docente (completo)** — Sesiones 1.1, 1.2, 1.3 y 1.4 completadas:
-      dashboard con lista de cursos del periodo activo, detalle de curso con
+      dashboard con lista de cursos del día actual, detalle de curso con
       alumnos matriculados, ficha de alumno con notas/asistencias/incidencias,
       búsqueda dinámica de alumnos, CRUD de actividades por competencias,
       registro de calificaciones en lote con UNIQUE constraint,
-      registro de asistencia diaria con guardado en lote (64 tests pasando)
-- [ ] **Vistas Blade Docente** — completas (dashboard, detalle de curso, ficha de alumno, actividades, asistencia)
+      registro de asistencia diaria con guardado en lote, vista de horario
+      semanal completo (64 tests pasando)
+- [x] **Sistema de horarios** — asignaciones con día_semana, hora_inicio, hora_fin
+- [x] **Matrícula automática por grado/sección** — MatriculaService implementado
+- [x] **Navegación dinámica por rol** — portal-layout actualizado
+- [x] **Frontend Docente mejorado** — Sistema de diseño con componentes reutilizables
+      (card, button, badge, alert, breadcrumb), sidebar con navegación contextual,
+      dashboard con estadísticas, tarjetas de curso mejoradas, vistas responsive
+      con Tailwind CSS, iconos SVG, gradientes y animaciones sutiles. Barra lateral
+      profesional con datos del docente (nombre, especialidad, email, teléfono) y
+      lista de cursos agrupados por día de la semana, siempre visible en desktop
+      y colapsable en mobile. Layout de dos columnas consistente en dashboard,
+      vista de curso y ficha de alumno: contenido principal a la izquierda con
+      scroll, estadísticas a la derecha en columna sticky (fija al hacer scroll).
+      Tarjetas de curso completamente clickeables (toda la tarjeta es un enlace).
+- [x] **Datos de prueba expandidos** — 96 cursos (6 grados × 2 secciones × 8 materias),
+      108 asignaciones distribuidas equitativamente entre 6 docentes (18 cursos por
+      docente, 3-5 cursos por día). Botones de cerrar sesión visibles en dashboard,
+      sidebar y header mobile.
 - [ ] **Rutas + controladores + vistas Alumno**
 - [ ] **Rutas + controladores + vistas Padre**
 - [ ] **Back-office (Secretaria, Director, Psicólogo, Admin)**
@@ -129,7 +146,8 @@ desarrollado y el que más debe sentirse simple e intuitivo.
 ## 6. Rutas definidas — ecosistema Docente
 
 ```
-GET  /docente                              → dashboard con lista de cursos
+GET  /docente                              → dashboard con cursos del día actual
+GET  /docente/horario                      → horario semanal completo
 GET  /docente/cursos/{asignacion}          → detalle de curso con alumnos + búsqueda
 GET  /docente/cursos/{asignacion}/alumnos/{alumno} → ficha de alumno con notas/asistencias/incidencias
 GET  /docente/cursos/{asignacion}/actividades → lista de actividades del curso
@@ -137,16 +155,15 @@ GET  /docente/cursos/{asignacion}/actividades/crear → formulario crear activid
 POST /docente/cursos/{asignacion}/actividades → guardar nueva actividad
 GET  /docente/cursos/{asignacion}/actividades/{actividad} → detalle de actividad + calificaciones
 POST /docente/cursos/{asignacion}/actividades/{actividad}/notas → guardar calificaciones en lote
+GET  /docente/cursos/{asignacion}/asistencia → registro de asistencia diaria
+POST /docente/cursos/{asignacion}/asistencia → guardar asistencia en lote
 ```
 
 Pendientes de implementar:
 ```
-GET  /docente/cursos/{asignacion}/asistencia
-POST /docente/cursos/{asignacion}/asistencia
-```
-
 (Rutas de Alumno, Padre y Back-office: pendientes de definir cuando se
 llegue a ese paso — no inventarlas anticipadamente.)
+```
 
 ---
 

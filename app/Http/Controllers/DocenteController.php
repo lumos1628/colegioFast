@@ -11,25 +11,83 @@ use App\Models\Nota;
 
 class DocenteController extends Controller
 {
-    public function dashboard()
+    private function getDocenteData(): array
     {
         $docente = auth()->user()->docente;
 
         if (! $docente) {
-            return view('docente.dashboard', ['asignaciones' => collect()]);
+            return ['docente' => null, 'cursosPorDia' => collect()];
+        }
+
+        $cursos = $docente->asignaciones()
+            ->with(['curso', 'periodoAcademico'])
+            ->whereHas('periodoAcademico', fn ($q) => $q->where('activo', true))
+            ->orderBy('dia_semana')
+            ->orderBy('hora_inicio')
+            ->get();
+
+        $cursosPorDia = $cursos->groupBy('dia_semana');
+
+        return [
+            'docente' => $docente,
+            'cursosPorDia' => $cursosPorDia,
+        ];
+    }
+
+    public function dashboard()
+    {
+        $data = $this->getDocenteData();
+        $docente = $data['docente'];
+
+        if (! $docente) {
+            return view('docente.dashboard', array_merge($data, [
+                'asignaciones' => collect(),
+                'fecha' => now(),
+            ]));
+        }
+
+        $diaSemana = now()->dayOfWeekIso;
+        $asignaciones = $docente->asignaciones()
+            ->with(['curso', 'periodoAcademico'])
+            ->whereHas('periodoAcademico', fn ($q) => $q->where('activo', true))
+            ->where('dia_semana', $diaSemana)
+            ->orderBy('hora_inicio')
+            ->get();
+
+        return view('docente.dashboard', array_merge($data, [
+            'asignaciones' => $asignaciones,
+            'fecha' => now(),
+        ]));
+    }
+
+    public function horario()
+    {
+        $data = $this->getDocenteData();
+        $docente = $data['docente'];
+
+        if (! $docente) {
+            return view('docente.horario', array_merge($data, [
+                'asignacionesPorDia' => collect(),
+            ]));
         }
 
         $asignaciones = $docente->asignaciones()
             ->with(['curso', 'periodoAcademico'])
             ->whereHas('periodoAcademico', fn ($q) => $q->where('activo', true))
+            ->whereNotNull('dia_semana')
+            ->orderBy('dia_semana')
+            ->orderBy('hora_inicio')
             ->get();
 
-        return view('docente.dashboard', compact('asignaciones'));
+        $asignacionesPorDia = $asignaciones->groupBy('dia_semana');
+
+        return view('docente.horario', array_merge($data, compact('asignacionesPorDia')));
     }
 
     public function showCurso(Asignacion $asignacion)
     {
-        $docente = auth()->user()->docente;
+        $data = $this->getDocenteData();
+        $docente = $data['docente'];
 
         abort_if(! $docente || $asignacion->docente_id !== $docente->id, 403);
 
@@ -39,12 +97,13 @@ class DocenteController extends Controller
             'periodoAcademico',
         ]);
 
-        return view('docente.curso', compact('asignacion'));
+        return view('docente.curso', array_merge($data, compact('asignacion')));
     }
 
     public function showAlumno(Asignacion $asignacion, Alumno $alumno)
     {
-        $docente = auth()->user()->docente;
+        $data = $this->getDocenteData();
+        $docente = $data['docente'];
 
         abort_if(! $docente || $asignacion->docente_id !== $docente->id, 403);
 
@@ -65,6 +124,6 @@ class DocenteController extends Controller
         $incidencias = IncidenciaConducta::where('alumno_id', $alumno->id)
             ->get();
 
-        return view('docente.alumno', compact('asignacion', 'alumno', 'notas', 'asistencias', 'incidencias'));
+        return view('docente.alumno', array_merge($data, compact('asignacion', 'alumno', 'notas', 'asistencias', 'incidencias')));
     }
 }

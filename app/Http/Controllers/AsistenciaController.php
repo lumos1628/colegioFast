@@ -10,9 +10,33 @@ use Illuminate\Http\Request;
 
 class AsistenciaController extends Controller
 {
-    public function index(Asignacion $asignacion, Request $request)
+    private function getDocenteData(): array
     {
         $docente = auth()->user()->docente;
+
+        if (! $docente) {
+            return ['docente' => null, 'cursosPorDia' => collect()];
+        }
+
+        $cursos = $docente->asignaciones()
+            ->with(['curso', 'periodoAcademico'])
+            ->whereHas('periodoAcademico', fn ($q) => $q->where('activo', true))
+            ->orderBy('dia_semana')
+            ->orderBy('hora_inicio')
+            ->get();
+
+        $cursosPorDia = $cursos->groupBy('dia_semana');
+
+        return [
+            'docente' => $docente,
+            'cursosPorDia' => $cursosPorDia,
+        ];
+    }
+
+    public function index(Asignacion $asignacion, Request $request)
+    {
+        $data = $this->getDocenteData();
+        $docente = $data['docente'];
         abort_if(! $docente || $asignacion->docente_id !== $docente->id, 403);
 
         $fecha = $request->input('fecha', now()->format('Y-m-d'));
@@ -27,7 +51,7 @@ class AsistenciaController extends Controller
             ->get()
             ->keyBy('alumno_id');
 
-        return view('docente.asistencia.index', compact('asignacion', 'alumnos', 'asistencias', 'fecha'));
+        return view('docente.asistencia.index', array_merge($data, compact('asignacion', 'alumnos', 'asistencias', 'fecha')));
     }
 
     public function store(StoreAsistenciaRequest $request, Asignacion $asignacion)

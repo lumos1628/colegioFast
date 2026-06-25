@@ -12,8 +12,7 @@ test('docente autenticado puede ver su dashboard', function () {
         ->get(route('docente.dashboard'));
 
     $response->assertOk();
-    $response->assertSee('Mis Cursos');
-    $response->assertSee($docente->user->name);
+    $response->assertSee('Mis Cursos de Hoy');
 });
 
 test('dashboard muestra cursos del periodo activo', function () {
@@ -22,6 +21,7 @@ test('dashboard muestra cursos del periodo activo', function () {
     $asignacion = Asignacion::factory()->create([
         'docente_id' => $docente->id,
         'periodo_academico_id' => $periodo->id,
+        'dia_semana' => now()->dayOfWeekIso,
     ]);
 
     $response = $this->actingAs($docente->user)

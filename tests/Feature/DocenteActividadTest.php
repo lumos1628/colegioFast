@@ -20,7 +20,7 @@ test('docente puede ver lista de actividades del curso', function () {
 
     $response->assertOk();
     $response->assertSee($actividad->titulo);
-    $response->assertSee('Crear actividad');
+    $response->assertSee('Nueva Actividad');
 });
 
 test('docente puede ver formulario de crear actividad', function () {
@@ -174,5 +174,5 @@ test('vista de curso incluye link a actividades', function () {
         ->get(route('docente.cursos.show', $asignacion));
 
     $response->assertOk();
-    $response->assertSee('Gestionar actividades');
+    $response->assertSee('Actividades');
 });

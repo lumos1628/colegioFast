@@ -11,9 +11,33 @@ use App\Models\Nota;
 
 class ActividadController extends Controller
 {
-    public function index(Asignacion $asignacion)
+    private function getDocenteData(): array
     {
         $docente = auth()->user()->docente;
+
+        if (! $docente) {
+            return ['docente' => null, 'cursosPorDia' => collect()];
+        }
+
+        $cursos = $docente->asignaciones()
+            ->with(['curso', 'periodoAcademico'])
+            ->whereHas('periodoAcademico', fn ($q) => $q->where('activo', true))
+            ->orderBy('dia_semana')
+            ->orderBy('hora_inicio')
+            ->get();
+
+        $cursosPorDia = $cursos->groupBy('dia_semana');
+
+        return [
+            'docente' => $docente,
+            'cursosPorDia' => $cursosPorDia,
+        ];
+    }
+
+    public function index(Asignacion $asignacion)
+    {
+        $data = $this->getDocenteData();
+        $docente = $data['docente'];
         abort_if(! $docente || $asignacion->docente_id !== $docente->id, 403);
 
         $actividades = Actividad::where('asignacion_id', $asignacion->id)
@@ -21,17 +45,18 @@ class ActividadController extends Controller
             ->orderBy('fecha', 'desc')
             ->get();
 
-        return view('docente.actividades.index', compact('asignacion', 'actividades'));
+        return view('docente.actividades.index', array_merge($data, compact('asignacion', 'actividades')));
     }
 
     public function create(Asignacion $asignacion)
     {
-        $docente = auth()->user()->docente;
+        $data = $this->getDocenteData();
+        $docente = $data['docente'];
         abort_if(! $docente || $asignacion->docente_id !== $docente->id, 403);
 
         $competencias = Competencia::with('capacidades')->get();
 
-        return view('docente.actividades.create', compact('asignacion', 'competencias'));
+        return view('docente.actividades.create', array_merge($data, compact('asignacion', 'competencias')));
     }
 
     public function store(StoreActividadRequest $request, Asignacion $asignacion)
@@ -55,7 +80,8 @@ class ActividadController extends Controller
 
     public function show(Asignacion $asignacion, Actividad $actividad)
     {
-        $docente = auth()->user()->docente;
+        $data = $this->getDocenteData();
+        $docente = $data['docente'];
         abort_if(! $docente || $asignacion->docente_id !== $docente->id, 403);
         abort_if($actividad->asignacion_id !== $asignacion->id, 404);
 
@@ -70,6 +96,6 @@ class ActividadController extends Controller
             ->get()
             ->keyBy('alumno_id');
 
-        return view('docente.actividades.show', compact('asignacion', 'actividad', 'alumnos', 'notas'));
+        return view('docente.actividades.show', array_merge($data, compact('asignacion', 'actividad', 'alumnos', 'notas')));
     }
 }

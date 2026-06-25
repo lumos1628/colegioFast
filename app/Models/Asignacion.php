@@ -19,6 +19,14 @@ class Asignacion extends Model
         'docente_id',
         'curso_id',
         'periodo_academico_id',
+        'dia_semana',
+        'hora_inicio',
+        'hora_fin',
+    ];
+
+    protected $casts = [
+        'hora_inicio' => 'datetime:H:i',
+        'hora_fin' => 'datetime:H:i',
     ];
 
     public function docente(): BelongsTo

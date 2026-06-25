@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     // Ecosistema Docente
     Route::prefix('docente')->name('docente.')->group(function () {
         Route::get('/', [DocenteController::class, 'dashboard'])->name('dashboard');
+        Route::get('/horario', [DocenteController::class, 'horario'])->name('horario');
         Route::get('/cursos/{asignacion}', [DocenteController::class, 'showCurso'])->name('cursos.show');
         Route::get('/cursos/{asignacion}/alumnos/{alumno}', [DocenteController::class, 'showAlumno'])->name('cursos.alumnos.show');
 

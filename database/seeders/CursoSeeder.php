@@ -9,26 +9,31 @@ class CursoSeeder extends Seeder
 {
     public function run(): void
     {
-        $cursos = [
-            ['nombre' => 'Matemática', 'area_curricular' => 'Matemática', 'grado' => 1, 'seccion' => 'A'],
-            ['nombre' => 'Matemática', 'area_curricular' => 'Matemática', 'grado' => 2, 'seccion' => 'A'],
-            ['nombre' => 'Matemática', 'area_curricular' => 'Matemática', 'grado' => 3, 'seccion' => 'A'],
-            ['nombre' => 'Comunicación', 'area_curricular' => 'Comunicación', 'grado' => 1, 'seccion' => 'A'],
-            ['nombre' => 'Comunicación', 'area_curricular' => 'Comunicación', 'grado' => 2, 'seccion' => 'A'],
-            ['nombre' => 'Comunicación', 'area_curricular' => 'Comunicación', 'grado' => 3, 'seccion' => 'A'],
-            ['nombre' => 'Personal Social', 'area_curricular' => 'Personal Social', 'grado' => 1, 'seccion' => 'A'],
-            ['nombre' => 'Personal Social', 'area_curricular' => 'Personal Social', 'grado' => 2, 'seccion' => 'A'],
-            ['nombre' => 'Personal Social', 'area_curricular' => 'Personal Social', 'grado' => 3, 'seccion' => 'A'],
-            ['nombre' => 'Ciencia y Tecnología', 'area_curricular' => 'Ciencia y Tecnología', 'grado' => 1, 'seccion' => 'A'],
-            ['nombre' => 'Ciencia y Tecnología', 'area_curricular' => 'Ciencia y Tecnología', 'grado' => 2, 'seccion' => 'A'],
-            ['nombre' => 'Ciencia y Tecnología', 'area_curricular' => 'Ciencia y Tecnología', 'grado' => 3, 'seccion' => 'A'],
-            ['nombre' => 'Arte y Cultura', 'area_curricular' => 'Arte y Cultura', 'grado' => 1, 'seccion' => 'A'],
-            ['nombre' => 'Educación Física', 'area_curricular' => 'Educación Física', 'grado' => 1, 'seccion' => 'A'],
-            ['nombre' => 'Inglés', 'area_curricular' => 'Inglés', 'grado' => 1, 'seccion' => 'A'],
+        $materias = [
+            ['nombre' => 'Matemática', 'area_curricular' => 'Matemática'],
+            ['nombre' => 'Comunicación', 'area_curricular' => 'Comunicación'],
+            ['nombre' => 'Personal Social', 'area_curricular' => 'Personal Social'],
+            ['nombre' => 'Ciencia y Tecnología', 'area_curricular' => 'Ciencia y Tecnología'],
+            ['nombre' => 'Arte y Cultura', 'area_curricular' => 'Arte y Cultura'],
+            ['nombre' => 'Educación Física', 'area_curricular' => 'Educación Física'],
+            ['nombre' => 'Inglés', 'area_curricular' => 'Idiomas'],
+            ['nombre' => 'Religión', 'area_curricular' => 'Educación Religiosa'],
         ];
 
-        foreach ($cursos as $curso) {
-            Curso::create($curso);
+        $grados = [1, 2, 3, 4, 5, 6];
+        $secciones = ['A', 'B'];
+
+        foreach ($grados as $grado) {
+            foreach ($secciones as $seccion) {
+                foreach ($materias as $materia) {
+                    Curso::create([
+                        'nombre' => $materia['nombre'],
+                        'area_curricular' => $materia['area_curricular'],
+                        'grado' => $grado,
+                        'seccion' => $seccion,
+                    ]);
+                }
+            }
         }
     }
 }
