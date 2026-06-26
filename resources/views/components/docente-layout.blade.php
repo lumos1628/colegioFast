@@ -87,6 +87,9 @@
 
             {{-- Footer del sidebar --}}
             <div class="border-t border-gray-200 p-4 space-y-3">
+                <a href="{{ route('docente.actividades-pendientes') }}" class="block text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                    Actividades pendientes
+                </a>
                 <a href="{{ route('docente.horario') }}" class="block text-sm text-gray-600 hover:text-blue-600 transition-colors">
                     Ver horario completo
                 </a>

@@ -12,6 +12,8 @@ class PeriodoAcademico extends Model
     /** @use HasFactory<PeriodoAcademicoFactory> */
     use HasFactory;
 
+    protected $table = 'periodo_academicos';
+
     protected $fillable = [
         'nombre',
         'fecha_inicio',

@@ -32,9 +32,9 @@ enum UserRole: string
             self::Director => 'director',
             self::Secretaria => 'secretaria',
             self::Docente => 'docente.dashboard',
-            self::Alumno => 'alumno',
-            self::Padre => 'padre',
-            self::Psicologo => 'psicologo',
+            self::Alumno => 'alumno.dashboard',
+            self::Padre => 'padre.dashboard',
+            self::Psicologo => 'psicologo.dashboard',
         };
     }
 }

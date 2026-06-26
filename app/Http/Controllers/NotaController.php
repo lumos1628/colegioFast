@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Calificacion;
 use App\Http\Requests\StoreNotaRequest;
+use App\Jobs\EnviarNotificacionJob;
 use App\Models\Actividad;
 use App\Models\Asignacion;
 use App\Models\Nota;
@@ -16,7 +18,7 @@ class NotaController extends Controller
         abort_if($actividad->asignacion_id !== $asignacion->id, 404);
 
         foreach ($request->notas as $notaData) {
-            Nota::updateOrCreate(
+            $nota = Nota::updateOrCreate(
                 [
                     'actividad_id' => $actividad->id,
                     'alumno_id' => $notaData['alumno_id'],
@@ -24,9 +26,18 @@ class NotaController extends Controller
                 [
                     'calificacion' => $notaData['calificacion'],
                     'observacion' => $notaData['observacion'] ?? null,
-                    'visible_para_alumno' => true,
+                    'visible_para_alumno' => $notaData['visible_para_alumno'] ?? true,
                 ]
             );
+
+            if ($notaData['calificacion'] === Calificacion::C->value) {
+                EnviarNotificacionJob::dispatch(
+                    'nota_critica',
+                    $notaData['alumno_id'],
+                    null,
+                    $nota->id
+                );
+            }
         }
 
         return redirect()

@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreMatriculaRequest extends FormRequest
@@ -12,18 +11,15 @@ class StoreMatriculaRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'alumno_id' => 'required|exists:alumnos,id',
+            'grado' => 'required|integer|min:1|max:6',
+            'seccion' => 'required|string|max:1',
         ];
     }
 }

@@ -8,19 +8,19 @@
 
         {{-- Header --}}
         <div class="mb-8">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900">{{ $asignacion->curso->nombre }}</h1>
                     <p class="mt-1 text-sm text-gray-500">
                         {{ $asignacion->curso->grado }}° "{{ $asignacion->curso->seccion }}" • {{ $asignacion->periodoAcademico->nombre }}
                     </p>
                 </div>
-                <div class="flex gap-3">
-                    <x-button variant="primary" :href="route('docente.cursos.actividades.index', $asignacion)">
+                <div class="flex gap-3 shrink-0">
+                    <x-button variant="secondary" :href="route('docente.cursos.reporte', $asignacion)">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        Actividades
+                        Exportar Excel
                     </x-button>
                     <x-button variant="success" :href="route('docente.cursos.asistencia.index', $asignacion)">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,7 +33,7 @@
         </div>
 
         {{-- Layout de dos columnas --}}
-        <div class="flex gap-8">
+        <div class="flex flex-col lg:flex-row gap-8">
             {{-- Columna izquierda: Lista de alumnos --}}
             <div class="flex-1 min-w-0">
                 <x-card title="Alumnos Matriculados" :subtitle="$asignacion->matriculas->count() . ' alumnos registrados'">
@@ -88,32 +88,62 @@
             </div>
 
             {{-- Columna derecha: Estadísticas --}}
-            <div class="w-80 shrink-0 sticky top-8 self-start">
+            <div class="w-full lg:w-80 shrink-0 lg:sticky top-8 self-start">
                 <div class="space-y-4">
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
-                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
+                    {{-- Botón expandible de Actividades --}}
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <button id="toggle-actividades" class="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3 text-left">
+                                    <p class="text-sm font-semibold text-gray-900">Actividades</p>
+                                    <p class="text-xs text-gray-500">{{ $actividadesRecientes->count() }} actividades recientes</p>
+                                </div>
                             </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-500">Alumnos</p>
-                                <p class="text-2xl font-semibold text-gray-900">{{ $asignacion->matriculas->count() }}</p>
-                            </div>
+                            <svg class="w-5 h-5 text-gray-400 chevron transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="lista-actividades" class="hidden border-t border-gray-200">
+                            @forelse($actividadesRecientes as $actividad)
+                                <a href="{{ route('docente.cursos.actividades.show', [$asignacion, $actividad]) }}" class="block p-4 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0">
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900 truncate">{{ $actividad->titulo }}</p>
+                                            <p class="text-xs text-gray-500 mt-1">{{ $actividad->fecha->format('d/m/Y') }}</p>
+                                        </div>
+                                        <span class="ml-3 inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-700">
+                                            {{ $actividad->competencia->nombre }}
+                                        </span>
+                                    </div>
+                                </a>
+                            @empty
+                                <div class="p-4 text-center">
+                                    <p class="text-sm text-gray-500">Sin actividades creadas</p>
+                                </div>
+                            @endforelse
+                            @if($actividadesRecientes->isNotEmpty())
+                                <a href="{{ route('docente.cursos.actividades.index', $asignacion) }}" class="block p-3 text-center text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors border-t border-gray-100">
+                                    Ver todas las actividades →
+                                </a>
+                            @endif
                         </div>
                     </div>
 
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                         <div class="flex items-center">
-                            <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
-                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-500">Actividades</p>
-                                <p class="text-2xl font-semibold text-gray-900">{{ $asignacion->actividades->count() }}</p>
+                                <p class="text-sm font-medium text-gray-500">Alumnos</p>
+                                <p class="text-2xl font-semibold text-gray-900">{{ $asignacion->matriculas->count() }}</p>
                             </div>
                         </div>
                     </div>
@@ -142,6 +172,11 @@
     </div>
 
     <script>
+        document.getElementById('toggle-actividades').addEventListener('click', function() {
+            document.getElementById('lista-actividades').classList.toggle('hidden');
+            this.querySelector('.chevron').classList.toggle('rotate-180');
+        });
+
         document.getElementById('buscar-alumno').addEventListener('input', function(e) {
             const filtro = e.target.value.toLowerCase();
             document.querySelectorAll('.alumno-item').forEach(item => {

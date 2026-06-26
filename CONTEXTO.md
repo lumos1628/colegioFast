@@ -113,9 +113,15 @@ desarrollado y el que más debe sentirse simple e intuitivo.
       dashboard con lista de cursos del día actual, detalle de curso con
       alumnos matriculados, ficha de alumno con notas/asistencias/incidencias,
       búsqueda dinámica de alumnos, CRUD de actividades por competencias,
+      CRUD de incidencias de conducta (falta leve, falta grave, mérito),
       registro de calificaciones en lote con UNIQUE constraint,
       registro de asistencia diaria con guardado en lote, vista de horario
       semanal completo (64 tests pasando)
+- [x] **Gestión de Matrículas (mínima)** — Controller administrativo para listar,
+      crear y eliminar matrículas. Usa MatriculaService para matricular alumnos
+      en todos los cursos de un grado/sección. Accesible desde el panel administrativo.
+- [x] **Privacidad de notas (UI)** — Campo `visible_para_alumno` ahora es controlable
+      por el docente mediante checkbox en el formulario de calificaciones.
 - [x] **Sistema de horarios** — asignaciones con día_semana, hora_inicio, hora_fin
 - [x] **Matrícula automática por grado/sección** — MatriculaService implementado
 - [x] **Navegación dinámica por rol** — portal-layout actualizado
@@ -133,11 +139,67 @@ desarrollado y el que más debe sentirse simple e intuitivo.
       108 asignaciones distribuidas equitativamente entre 6 docentes (18 cursos por
       docente, 3-5 cursos por día). Botones de cerrar sesión visibles en dashboard,
       sidebar y header mobile.
-- [ ] **Rutas + controladores + vistas Alumno**
-- [ ] **Rutas + controladores + vistas Padre**
-- [ ] **Back-office (Secretaria, Director, Psicólogo, Admin)**
-- [ ] **Reportes Excel formato Minedu**
-- [ ] **Tests Pest de flujos críticos**
+- [x] **Actividades pendientes (CUS-08)** — Vista dedicada accesible desde sidebar que
+      muestra actividades con calificación incompleta (alumnos sin nota) o actividades
+      futuras. Incluye barra de progreso por actividad y estadísticas en panel lateral.
+- [x] **Progreso bimestral (CUS-09)** — Sección en ficha de alumno que muestra promedios
+      por competencia usando la VIEW `notas_bimestrales`. Modelo `NotaBimestral` creado
+      para acceder a la VIEW. Incluye indicador visual de nivel (AD/A/B/C) y barra de
+      progreso por competencia.
+- [x] **Rutas + controladores + vistas Alumno** — Ecosistema completo: `AlumnoController`
+      con `getAlumnoData()`, layout `<x-alumno-layout>` con sidebar (cursos agrupados por
+      día, datos del alumno, DNI), dashboard con cursos matriculados y progreso bimestral
+      por competencia, vista de detalle de curso con actividades y calificaciones.
+      **CUS-11 (privacidad):** el alumno solo ve notas con `visible_para_alumno = true`.
+      Rutas: `GET /alumno` (dashboard), `GET /alumno/cursos/{asignacion}` (detalle).
+      Color temático: emerald (verde esmeralda). Authorization con `abort_if()` verificando
+      matrícula del alumno en la asignación.
+- [x] **Rutas + controladores + vistas Padre** — Ecosistema completo: `PadreController`
+      con `getPadreData()`, layout `<x-padre-layout>` con sidebar (lista de hijos tutorados),
+      dashboard con resumen de progreso de todos los hijos, vista detalle de hijo con
+      **TODAS** las notas (incluye `visible_para_alumno = false`), progreso bimestral,
+      asistencias e incidencias. **CUS-10:** notificaciones con filtro todas/no leídas y
+      acción marcar como leída. **CUS-12:** estado financiero con pagos agrupados por hijo,
+      totales pagado/pendiente. Color temático: violet (púrpura). Authorization con
+      `abort_if()` verificando relación padre-alumno vía `alumno_padre`.
+- [x] **Back-office administrativo (CUS-14, CUS-15)** — Controllers administrativos bajo
+      namespace `Admin\` con CRUD completo: `AlumnoController` (crear User+Alumno en
+      transacción), `PadreController` (crear User+Padre en transacción),
+      `AlumnoPadreController` (gestión relación N-N con parentesco),
+      `PeriodoAcademicoController` (CRUD + activar/desactivar periodo),
+      `CursoController` (CRUD), `AsignacionController` (CRUD con horario).
+      Dashboard administrativo con estadísticas reales (alumnos, padres, docentes, cursos,
+      matrículas, asignaciones) y periodo activo. Layout administrativo actualizado con
+      navegación completa. 35 rutas administrativas registradas.
+- [x] **Back-office (Secretaria, Director, Psicólogo)** — Controllers bajo namespace
+      `Backoffice\`: `SecretariaController` (dashboard operativo con matrículas recientes,
+      pagos pendientes, alumnos sin matrícula), `DirectorController` (dashboard de
+      supervisión con estadísticas globales, promedio general, alumnos por grado,
+      incidencias recientes), `PsicologoController` (CRUD completo de bitácora
+      psicológica con layout propio `<x-psicologo-layout>`, sidebar de alumnos atendidos,
+      autorización con `abort_if()` verificando `psicologo_id`). **CUS-17** implementado.
+      Color temático psicólogo: teal.
+- [x] **Notificaciones automáticas (CUS-13)** — Sistema de notificaciones automáticas
+      implementado con `NotificacionService` y `EnviarNotificacionJob` (cola database).
+      Se dispara al: registrar asistencia (ausente/tardanza → notifica inasistencia),
+      registrar calificación C (→ notifica nota crítica), registrar incidencia de
+      conducta (→ notifica incidencia). Las notificaciones se crean para todos los
+      padres vinculados al alumno vía `alumno_padre`.
+- [x] **Reportes Excel (CUS-16)** — Exportación a Excel con `openspout/openspout`.
+      `LibretaNotasExport` genera libreta individual por alumno (respeta
+      `visible_para_alumno` si descarga el alumno). `ReporteCursoExport` genera
+      reporte grupal por curso con promedios por competencia y nivel (AD/A/B/C).
+      `ReporteController` con rutas: `GET /admin/reportes/libreta/{alumno}` y
+      `GET /docente/cursos/{asignacion}/reporte`. Botones de descarga agregados
+      en vista de curso (docente) y lista de alumnos (admin).
+- [x] **Tests Pest de flujos críticos** — 113 tests pasando (276 aserciones).
+      Cobertura completa de: ecosistema Alumno (dashboard, privacidad de notas,
+      autorización), ecosistema Padre (dashboard, hijos, notificaciones, pagos),
+      Back-office Admin (alumnos, padres, periodos, cursos, asignaciones),
+      Psicólogo (bitácora con privacidad total), notificaciones automáticas
+      (dispatch de jobs al registrar asistencia/notas/incidencias), reportes
+      Excel (descarga para docente y admin), e integración entre roles
+      (autorización cruzada).
 
 > Actualizar este checklist cada vez que se complete un paso.
 
@@ -148,8 +210,9 @@ desarrollado y el que más debe sentirse simple e intuitivo.
 ```
 GET  /docente                              → dashboard con cursos del día actual
 GET  /docente/horario                      → horario semanal completo
+GET  /docente/actividades-pendientes       → actividades con calificación incompleta o futuras (CUS-08)
 GET  /docente/cursos/{asignacion}          → detalle de curso con alumnos + búsqueda
-GET  /docente/cursos/{asignacion}/alumnos/{alumno} → ficha de alumno con notas/asistencias/incidencias
+GET  /docente/cursos/{asignacion}/alumnos/{alumno} → ficha de alumno con notas/asistencias/incidencias/progreso bimestral (CUS-09)
 GET  /docente/cursos/{asignacion}/actividades → lista de actividades del curso
 GET  /docente/cursos/{asignacion}/actividades/crear → formulario crear actividad
 POST /docente/cursos/{asignacion}/actividades → guardar nueva actividad
@@ -161,8 +224,107 @@ POST /docente/cursos/{asignacion}/asistencia → guardar asistencia en lote
 
 Pendientes de implementar:
 ```
-(Rutas de Alumno, Padre y Back-office: pendientes de definir cuando se
+(Rutas de tests: pendientes de definir cuando se
 llegue a ese paso — no inventarlas anticipadamente.)
+```
+
+## Rutas definidas — Reportes (CUS-16)
+
+```
+# Reportes Excel
+GET  /admin/reportes/libreta/{alumno}       → descargar libreta individual (Admin/Secretaria)
+GET  /docente/cursos/{asignacion}/reporte   → descargar reporte grupal del curso (Docente)
+```
+
+## Rutas definidas — ecosistema Alumno
+
+```
+GET  /alumno                              → dashboard con cursos matriculados y progreso bimestral
+GET  /alumno/cursos/{asignacion}          → detalle de curso con actividades y calificaciones (solo visible_para_alumno=true)
+```
+
+## Rutas definidas — ecosistema Padre
+
+```
+GET  /padre                               → dashboard con progreso de todos los hijos
+GET  /padre/hijos/{alumno}                → detalle de hijo con TODAS las notas, progreso, asistencias, incidencias
+GET  /padre/notificaciones                → lista de notificaciones con filtro (todas/no leídas)
+POST /padre/notificaciones/{notificacion}/leida → marcar notificación como leída
+GET  /padre/pagos                         → estado financiero con pagos agrupados por hijo
+```
+
+## Rutas definidas — Back-office Administrativo (35 rutas)
+
+```
+# Dashboard
+GET  /admin                              → dashboard con estadísticas
+
+# CUS-14: Matrículas
+GET  /admin/matriculas                   → lista de matrículas del periodo activo
+GET  /admin/matriculas/crear             → formulario matricular alumno
+POST /admin/matriculas                   → matricular (usa MatriculaService)
+DELETE /admin/matriculas/{matricula}     → eliminar matrícula
+
+# CUS-14: Alumnos
+GET  /admin/alumnos                      → lista con búsqueda y filtro por grado
+GET  /admin/alumnos/crear                → formulario crear alumno
+POST /admin/alumnos                      → crear (User + Alumno en transacción)
+GET  /admin/alumnos/{alumno}/editar      → formulario editar
+PUT  /admin/alumnos/{alumno}             → actualizar
+DELETE /admin/alumnos/{alumno}           → eliminar (User + Alumno)
+
+# CUS-14: Padres
+GET  /admin/padres                       → lista con búsqueda
+GET  /admin/padres/crear                 → formulario crear padre
+POST /admin/padres                       → crear (User + Padre en transacción)
+GET  /admin/padres/{padre}/editar        → formulario editar
+PUT  /admin/padres/{padre}               → actualizar
+DELETE /admin/padres/{padre}             → eliminar (User + Padre)
+
+# CUS-14: Relación Alumno-Padre
+GET  /admin/alumnos/{alumno}/padres      → gestionar padres del alumno
+POST /admin/alumnos/{alumno}/padres      → vincular padre (con parentesco)
+DELETE /admin/alumnos/{alumno}/padres/{padre} → desvincular
+
+# CUS-15: Periodos Académicos
+GET  /admin/periodos                     → lista de periodos
+POST /admin/periodos                     → crear periodo
+PUT  /admin/periodos/{periodo}           → actualizar
+POST /admin/periodos/{periodo}/activar   → activar (desactiva los demás)
+DELETE /admin/periodos/{periodo}         → eliminar (solo si no está activo)
+
+# CUS-15: Cursos
+GET  /admin/cursos                       → lista con filtro por grado
+POST /admin/cursos                       → crear curso
+PUT  /admin/cursos/{curso}               → actualizar
+DELETE /admin/cursos/{curso}             → eliminar (solo sin asignaciones)
+
+# CUS-15: Asignaciones (tabla central)
+GET  /admin/asignaciones                 → lista con filtro por periodo
+GET  /admin/asignaciones/crear           → formulario (docente+curso+periodo+horario)
+POST /admin/asignaciones                 → crear asignación
+GET  /admin/asignaciones/{asignacion}/editar → formulario editar
+PUT  /admin/asignaciones/{asignacion}    → actualizar
+DELETE /admin/asignaciones/{asignacion}  → eliminar (solo sin matrículas)
+```
+
+## Rutas definidas — Back-office (Secretaria, Director, Psicólogo)
+
+```
+# Secretaria
+GET  /secretaria                         → dashboard operativo (matrículas recientes, pagos pendientes, alumnos sin matrícula)
+
+# Director
+GET  /director                           → dashboard de supervisión (estadísticas globales, promedio general, incidencias)
+
+# Psicólogo (CUS-17)
+GET  /psicologo                          → dashboard con resumen de bitácoras
+GET  /psicologo/bitacoras                → lista de bitácoras (con filtro por alumno)
+GET  /psicologo/bitacoras/crear          → formulario crear bitácora
+POST /psicologo/bitacoras                → guardar bitácora
+GET  /psicologo/bitacoras/{bitacora}/editar → formulario editar
+PUT  /psicologo/bitacoras/{bitacora}     → actualizar
+DELETE /psicologo/bitacoras/{bitacora}   → eliminar (solo si pertenece al psicólogo)
 ```
 
 ---

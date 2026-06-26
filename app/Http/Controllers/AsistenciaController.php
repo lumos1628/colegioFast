@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAsistenciaRequest;
+use App\Jobs\EnviarNotificacionJob;
 use App\Models\Asignacion;
 use App\Models\Asistencia;
 use App\Models\Matricula;
@@ -62,7 +63,7 @@ class AsistenciaController extends Controller
         $fecha = $request->fecha;
 
         foreach ($request->asistencias as $asistenciaData) {
-            Asistencia::updateOrCreate(
+            $asistencia = Asistencia::updateOrCreate(
                 [
                     'asignacion_id' => $asignacion->id,
                     'alumno_id' => $asistenciaData['alumno_id'],
@@ -73,6 +74,14 @@ class AsistenciaController extends Controller
                     'observacion' => $asistenciaData['observacion'] ?? null,
                 ]
             );
+
+            if (in_array($asistenciaData['estado'], ['ausente', 'tardanza'])) {
+                EnviarNotificacionJob::dispatch(
+                    'inasistencia',
+                    $asistenciaData['alumno_id'],
+                    $asistencia->id
+                );
+            }
         }
 
         return redirect()

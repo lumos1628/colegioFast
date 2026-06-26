@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Actividad;
 use App\Models\Alumno;
 use App\Models\Asignacion;
 use App\Models\Asistencia;
 use App\Models\IncidenciaConducta;
 use App\Models\Matricula;
 use App\Models\Nota;
+use App\Models\NotaBimestral;
 
 class DocenteController extends Controller
 {
@@ -42,6 +44,7 @@ class DocenteController extends Controller
         if (! $docente) {
             return view('docente.dashboard', array_merge($data, [
                 'asignaciones' => collect(),
+                'actividadesRecientes' => collect(),
                 'fecha' => now(),
             ]));
         }
@@ -54,8 +57,18 @@ class DocenteController extends Controller
             ->orderBy('hora_inicio')
             ->get();
 
+        $actividadesRecientes = Actividad::whereHas('asignacion', function ($q) use ($docente) {
+            $q->where('docente_id', $docente->id)
+                ->whereHas('periodoAcademico', fn ($pq) => $pq->where('activo', true));
+        })
+            ->with(['asignacion.curso', 'competencia'])
+            ->orderBy('fecha', 'desc')
+            ->take(10)
+            ->get();
+
         return view('docente.dashboard', array_merge($data, [
             'asignaciones' => $asignaciones,
+            'actividadesRecientes' => $actividadesRecientes,
             'fecha' => now(),
         ]));
     }
@@ -84,6 +97,41 @@ class DocenteController extends Controller
         return view('docente.horario', array_merge($data, compact('asignacionesPorDia')));
     }
 
+    public function actividadesPendientes()
+    {
+        $data = $this->getDocenteData();
+        $docente = $data['docente'];
+
+        if (! $docente) {
+            return view('docente.actividades-pendientes', array_merge($data, [
+                'actividadesPendientes' => collect(),
+            ]));
+        }
+
+        $actividades = Actividad::whereHas('asignacion', function ($q) use ($docente) {
+            $q->where('docente_id', $docente->id)
+                ->whereHas('periodoAcademico', fn ($pq) => $pq->where('activo', true));
+        })
+            ->with(['asignacion.curso.matriculas', 'competencia', 'notas'])
+            ->orderBy('fecha')
+            ->get();
+
+        $actividadesPendientes = $actividades->filter(function ($actividad) {
+            if ($actividad->fecha->isToday() || $actividad->fecha->isFuture()) {
+                return true;
+            }
+
+            $totalAlumnos = $actividad->asignacion->matriculas->count();
+            $alumnosConNota = $actividad->notas->count();
+
+            return $alumnosConNota < $totalAlumnos;
+        });
+
+        return view('docente.actividades-pendientes', array_merge($data, [
+            'actividadesPendientes' => $actividadesPendientes,
+        ]));
+    }
+
     public function showCurso(Asignacion $asignacion)
     {
         $data = $this->getDocenteData();
@@ -97,7 +145,13 @@ class DocenteController extends Controller
             'periodoAcademico',
         ]);
 
-        return view('docente.curso', array_merge($data, compact('asignacion')));
+        $actividadesRecientes = $asignacion->actividades()
+            ->with('competencia')
+            ->orderBy('fecha', 'desc')
+            ->take(4)
+            ->get();
+
+        return view('docente.curso', array_merge($data, compact('asignacion', 'actividadesRecientes')));
     }
 
     public function showAlumno(Asignacion $asignacion, Alumno $alumno)
@@ -124,6 +178,11 @@ class DocenteController extends Controller
         $incidencias = IncidenciaConducta::where('alumno_id', $alumno->id)
             ->get();
 
-        return view('docente.alumno', array_merge($data, compact('asignacion', 'alumno', 'notas', 'asistencias', 'incidencias')));
+        $progresoBimestral = NotaBimestral::where('alumno_id', $alumno->id)
+            ->where('asignacion_id', $asignacion->id)
+            ->with('competencia')
+            ->get();
+
+        return view('docente.alumno', array_merge($data, compact('asignacion', 'alumno', 'notas', 'asistencias', 'incidencias', 'progresoBimestral')));
     }
 }

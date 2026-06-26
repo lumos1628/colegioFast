@@ -24,7 +24,7 @@
 
         {{-- Date Selector --}}
         <x-card class="mb-6">
-            <form method="GET" action="{{ route('docente.cursos.asistencia.index', $asignacion) }}" class="flex items-end gap-4">
+            <form method="GET" action="{{ route('docente.cursos.asistencia.index', $asignacion) }}" class="flex flex-col sm:flex-row items-stretch sm:items-end gap-4">
                 <div class="flex-1 max-w-xs">
                     <label for="fecha" class="block text-sm font-medium text-gray-700 mb-2">Fecha</label>
                     <input type="date" name="fecha" id="fecha" value="{{ $fecha }}"
@@ -72,7 +72,7 @@
                                         $observacionActual = $asistencias[$alumno->id]->observacion ?? '';
                                     @endphp
                                     <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4">
                                             <div class="flex items-center">
                                                 <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold text-xs">
                                                     {{ substr($alumno->nombres, 0, 1) }}{{ substr($alumno->apellido_paterno, 0, 1) }}
@@ -85,8 +85,8 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex gap-2" data-alumno-index="{{ $index }}">
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-wrap gap-1.5" data-alumno-index="{{ $index }}">
                                                 <button type="button" data-estado="presente"
                                                         class="estado-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all
                                                         {{ $estadoActual === 'presente' ? 'bg-green-500 text-white shadow-sm' : 'bg-green-100 text-green-700 hover:bg-green-200' }}">

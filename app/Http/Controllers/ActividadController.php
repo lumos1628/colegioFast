@@ -54,9 +54,11 @@ class ActividadController extends Controller
         $docente = $data['docente'];
         abort_if(! $docente || $asignacion->docente_id !== $docente->id, 403);
 
+        $asignacion->load('periodoAcademico');
         $competencias = Competencia::with('capacidades')->get();
+        $proximasFechas = $asignacion->proximasFechasClase(3);
 
-        return view('docente.actividades.create', array_merge($data, compact('asignacion', 'competencias')));
+        return view('docente.actividades.create', array_merge($data, compact('asignacion', 'competencias', 'proximasFechas')));
     }
 
     public function store(StoreActividadRequest $request, Asignacion $asignacion)
@@ -97,5 +99,51 @@ class ActividadController extends Controller
             ->keyBy('alumno_id');
 
         return view('docente.actividades.show', array_merge($data, compact('asignacion', 'actividad', 'alumnos', 'notas')));
+    }
+
+    public function edit(Asignacion $asignacion, Actividad $actividad)
+    {
+        $data = $this->getDocenteData();
+        $docente = $data['docente'];
+        abort_if(! $docente || $asignacion->docente_id !== $docente->id, 403);
+        abort_if($actividad->asignacion_id !== $asignacion->id, 404);
+
+        $asignacion->load('periodoAcademico');
+        $competencias = Competencia::with('capacidades')->get();
+        $proximasFechas = $asignacion->proximasFechasClase(3);
+
+        return view('docente.actividades.edit', array_merge($data, compact('asignacion', 'actividad', 'competencias', 'proximasFechas')));
+    }
+
+    public function update(StoreActividadRequest $request, Asignacion $asignacion, Actividad $actividad)
+    {
+        $docente = auth()->user()->docente;
+        abort_if(! $docente || $asignacion->docente_id !== $docente->id, 403);
+        abort_if($actividad->asignacion_id !== $asignacion->id, 404);
+
+        $actividad->update([
+            'titulo' => $request->titulo,
+            'descripcion' => $request->descripcion,
+            'fecha' => $request->fecha,
+            'competencia_id' => $request->competencia_id,
+            'capacidad_id' => $request->capacidad_id,
+        ]);
+
+        return redirect()
+            ->route('docente.cursos.actividades.show', [$asignacion, $actividad])
+            ->with('success', 'Actividad actualizada correctamente');
+    }
+
+    public function destroy(Asignacion $asignacion, Actividad $actividad)
+    {
+        $docente = auth()->user()->docente;
+        abort_if(! $docente || $asignacion->docente_id !== $docente->id, 403);
+        abort_if($actividad->asignacion_id !== $asignacion->id, 404);
+
+        $actividad->delete();
+
+        return redirect()
+            ->route('docente.cursos.actividades.index', $asignacion)
+            ->with('success', 'Actividad eliminada correctamente');
     }
 }

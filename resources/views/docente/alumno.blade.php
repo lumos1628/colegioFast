@@ -36,12 +36,50 @@
         </div>
 
         {{-- Layout de dos columnas --}}
-        <div class="flex gap-8">
+        <div class="flex flex-col lg:flex-row gap-8">
             {{-- Columna izquierda: Contenido principal --}}
             <div class="flex-1 min-w-0">
                 <div class="space-y-6">
+                    {{-- Progreso Bimestral --}}
+                    <x-card title="Progreso Bimestral" subtitle="Promedios por competencia (VIEW notas_bimestrales)">
+                        @if($progresoBimestral->isEmpty())
+                            <x-alert type="info">
+                                Sin datos de progreso bimestral. Registra calificaciones para ver el progreso.
+                            </x-alert>
+                        @else
+                            <div class="space-y-4">
+                                @foreach($progresoBimestral as $progreso)
+                                    @php
+                                        $nivel = match(true) {
+                                            $progreso->promedio_numerico >= 3.5 => ['label' => 'AD', 'variant' => 'success', 'color' => 'bg-green-500'],
+                                            $progreso->promedio_numerico >= 2.5 => ['label' => 'A', 'variant' => 'primary', 'color' => 'bg-blue-500'],
+                                            $progreso->promedio_numerico >= 1.5 => ['label' => 'B', 'variant' => 'warning', 'color' => 'bg-yellow-500'],
+                                            default => ['label' => 'C', 'variant' => 'danger', 'color' => 'bg-red-500'],
+                                        };
+                                        $porcentaje = round(($progreso->promedio_numerico / 4) * 100);
+                                    @endphp
+                                    <div class="p-4 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">{{ $progreso->competencia->nombre }}</p>
+                                                <p class="text-xs text-gray-500 mt-0.5">{{ $progreso->total_notas }} evaluaciones registradas</p>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-lg font-bold text-gray-900">{{ number_format($progreso->promedio_numerico, 1) }}</span>
+                                                <x-badge :variant="$nivel['variant']">{{ $nivel['label'] }}</x-badge>
+                                            </div>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="h-2 rounded-full {{ $nivel['color'] }} transition-all duration-300" style="width: {{ $porcentaje }}%"></div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </x-card>
+
                     {{-- Calificaciones --}}
-                    <x-card title="Calificaciones" :subtitle="$notas->count() . ' notas registradas'">
+                    <x-card title="Calificaciones Detalladas" :subtitle="$notas->count() . ' notas registradas'">
                         @if($notas->isEmpty())
                             <x-alert type="info">
                                 Sin calificaciones registradas.
@@ -106,13 +144,25 @@
                     </x-card>
 
                     {{-- Incidencias --}}
-                    @if($incidencias->isNotEmpty())
-                        <x-card title="Incidencias de Conducta" :subtitle="$incidencias->count() . ' registros'">
+                    <x-card title="Incidencias de Conducta" :subtitle="$incidencias->count() . ' registros'">
+                        <div class="mb-4">
+                            <x-button variant="primary" size="sm" :href="route('docente.cursos.alumnos.incidencias.create', [$asignacion, $alumno])">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                                Registrar incidencia
+                            </x-button>
+                        </div>
+                        @if($incidencias->isEmpty())
+                            <x-alert type="info">
+                                Sin incidencias registradas.
+                            </x-alert>
+                        @else
                             <ul class="space-y-3">
                                 @foreach($incidencias as $incidencia)
                                     <li class="p-4 border border-gray-200 rounded-lg">
                                         <div class="flex items-start justify-between">
-                                            <div>
+                                            <div class="flex-1">
                                                 <x-badge :variant="match($incidencia->tipo->value) {
                                                     'falta_leve' => 'warning',
                                                     'falta_grave' => 'danger',
@@ -122,19 +172,34 @@
                                                     {{ $incidencia->tipo->label() }}
                                                 </x-badge>
                                                 <p class="text-sm text-gray-700 mt-2">{{ $incidencia->descripcion }}</p>
+                                                <div class="flex items-center gap-2 mt-3">
+                                                    <span class="text-xs text-gray-500">{{ $incidencia->fecha->format('d/m/Y') }}</span>
+                                                    <a href="{{ route('docente.cursos.alumnos.incidencias.edit', [$asignacion, $alumno, $incidencia]) }}"
+                                                       class="text-xs text-blue-600 hover:text-blue-800">
+                                                        Editar
+                                                    </a>
+                                                    <form action="{{ route('docente.cursos.alumnos.incidencias.destroy', [$asignacion, $alumno, $incidencia]) }}"
+                                                          method="POST" class="inline"
+                                                          onsubmit="return confirm('¿Estás seguro de eliminar esta incidencia?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-xs text-red-600 hover:text-red-800">
+                                                            Eliminar
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </div>
-                                            <span class="text-xs text-gray-500">{{ $incidencia->fecha->format('d/m/Y') }}</span>
                                         </div>
                                     </li>
                                 @endforeach
                             </ul>
-                        </x-card>
-                    @endif
+                        @endif
+                    </x-card>
                 </div>
             </div>
 
             {{-- Columna derecha: Estadísticas --}}
-            <div class="w-80 shrink-0 sticky top-8 self-start">
+            <div class="w-full lg:w-80 shrink-0 lg:sticky top-8 self-start">
                 <div class="space-y-4">
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                         <div class="flex items-center">

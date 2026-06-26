@@ -17,7 +17,7 @@
 
 <div {{ $attributes->merge(['class' => 'bg-white rounded-lg shadow-sm border border-gray-200' . ($hover ? ' hover:shadow-md transition-shadow' : '')]) }}>
     @if($title || $subtitle)
-        <div class="border-b border-gray-200 px-6 py-4">
+        <div class="border-b border-gray-200 px-4 sm:px-6 py-4">
             @if($title)
                 <h3 class="text-lg font-semibold text-gray-900">{{ $title }}</h3>
             @endif

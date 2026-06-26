@@ -2,65 +2,162 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePadreRequest;
-use App\Http\Requests\UpdatePadreRequest;
-use App\Models\Padre;
+use App\Models\Alumno;
+use App\Models\Nota;
+use App\Models\NotaBimestral;
+use App\Models\Notificacion;
+use App\Models\Pago;
 
 class PadreController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    private function getPadreData(): array
     {
-        //
+        $padre = auth()->user()->padre;
+
+        if (! $padre) {
+            return ['padre' => null, 'hijos' => collect()];
+        }
+
+        $hijos = $padre->alumnos()
+            ->with(['matriculas.asignacion.curso', 'matriculas.asignacion.periodoAcademico'])
+            ->get();
+
+        return [
+            'padre' => $padre,
+            'hijos' => $hijos,
+        ];
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function dashboard()
     {
-        //
+        $data = $this->getPadreData();
+        $padre = $data['padre'];
+
+        if (! $padre) {
+            return view('padre.dashboard', array_merge($data, [
+                'progresoPorHijo' => collect(),
+                'notificacionesRecientes' => collect(),
+            ]));
+        }
+
+        $hijos = $padre->alumnos()->get();
+
+        $progresoPorHijo = collect();
+        foreach ($hijos as $hijo) {
+            $progreso = NotaBimestral::where('alumno_id', $hijo->id)
+                ->with(['asignacion.curso', 'competencia'])
+                ->get();
+
+            $progresoPorHijo->put($hijo->id, [
+                'hijo' => $hijo,
+                'progreso' => $progreso,
+            ]);
+        }
+
+        $notificacionesRecientes = Notificacion::where('user_id', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        return view('padre.dashboard', array_merge($data, [
+            'progresoPorHijo' => $progresoPorHijo,
+            'notificacionesRecientes' => $notificacionesRecientes,
+        ]));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorePadreRequest $request)
+    public function showHijo(Alumno $alumno)
     {
-        //
+        $data = $this->getPadreData();
+        $padre = $data['padre'];
+
+        abort_if(! $padre, 403);
+
+        $esTutor = $padre->alumnos()->where('alumnos.id', $alumno->id)->exists();
+        abort_if(! $esTutor, 403);
+
+        $progresoBimestral = NotaBimestral::where('alumno_id', $alumno->id)
+            ->with(['asignacion.curso', 'competencia'])
+            ->get();
+
+        $notas = Nota::where('alumno_id', $alumno->id)
+            ->with(['actividad.asignacion.curso', 'actividad.competencia'])
+            ->get();
+
+        $notasPorCurso = $notas->groupBy(fn ($nota) => $nota->actividad->asignacion_id);
+
+        $asistencias = $alumno->asistencias()
+            ->with('asignacion.curso')
+            ->orderBy('fecha', 'desc')
+            ->get();
+
+        $incidencias = $alumno->incidenciasConducta()->get();
+
+        return view('padre.hijo', array_merge($data, compact(
+            'alumno',
+            'progresoBimestral',
+            'notasPorCurso',
+            'asistencias',
+            'incidencias'
+        )));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Padre $padre)
+    public function notificaciones()
     {
-        //
+        $data = $this->getPadreData();
+
+        $filtro = request('filtro', 'todas');
+
+        $query = Notificacion::where('user_id', auth()->id())
+            ->orderBy('created_at', 'desc');
+
+        if ($filtro === 'no_leidas') {
+            $query->where('leido', false);
+        }
+
+        $notificaciones = $query->paginate(20);
+
+        return view('padre.notificaciones', array_merge($data, compact('notificaciones', 'filtro')));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Padre $padre)
+    public function marcarLeida(Notificacion $notificacion)
     {
-        //
+        abort_if($notificacion->user_id !== auth()->id(), 403);
+
+        $notificacion->update(['leido' => true]);
+
+        return back()->with('success', 'Notificación marcada como leída');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePadreRequest $request, Padre $padre)
+    public function pagos()
     {
-        //
-    }
+        $data = $this->getPadreData();
+        $padre = $data['padre'];
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Padre $padre)
-    {
-        //
+        if (! $padre) {
+            return view('padre.pagos', array_merge($data, [
+                'pagosPorHijo' => collect(),
+            ]));
+        }
+
+        $hijos = $padre->alumnos()->get();
+
+        $pagosPorHijo = collect();
+        foreach ($hijos as $hijo) {
+            $pagos = Pago::where('alumno_id', $hijo->id)
+                ->with('periodoAcademico')
+                ->orderBy('fecha_vencimiento', 'desc')
+                ->get();
+
+            $pagosPorHijo->put($hijo->id, [
+                'hijo' => $hijo,
+                'pagos' => $pagos,
+                'total_pagado' => $pagos->where('estado.value', 'pagado')->sum('monto'),
+                'total_pendiente' => $pagos->whereIn('estado.value', ['pendiente', 'vencido'])->sum('monto'),
+            ]);
+        }
+
+        return view('padre.pagos', array_merge($data, [
+            'pagosPorHijo' => $pagosPorHijo,
+        ]));
     }
 }

@@ -9,7 +9,7 @@
         </div>
 
         {{-- Layout de dos columnas: Cursos izquierda, Estadísticas derecha --}}
-        <div class="flex gap-8">
+        <div class="flex flex-col lg:flex-row gap-8">
             {{-- Columna izquierda: Cursos --}}
             <div class="flex-1 min-w-0">
                 @if($asignaciones->isEmpty())
@@ -58,53 +58,40 @@
                 @endif
             </div>
 
-            {{-- Columna derecha: Estadísticas --}}
-            <div class="w-80 shrink-0 sticky top-8 self-start">
-                <div class="space-y-4">
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
-                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-500">Clases hoy</p>
-                                <p class="text-2xl font-semibold text-gray-900">{{ $asignaciones->count() }}</p>
-                            </div>
-                        </div>
+            {{-- Columna derecha: Actividades recientes --}}
+            <div class="w-full lg:w-80 shrink-0 lg:sticky top-8 self-start">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 max-h-[calc(100vh-6rem)] overflow-y-auto">
+                    <div class="border-b border-gray-200 px-4 sm:px-6 py-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Mis últimas actividades</h3>
+                        <p class="text-sm text-gray-500 mt-1">Actividades creadas recientemente</p>
                     </div>
-
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
-                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-500">Total alumnos</p>
-                                <p class="text-2xl font-semibold text-gray-900">
-                                    {{ $asignaciones->sum(fn($a) => $a->matriculas->count()) }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center">
-                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="divide-y divide-gray-200">
+                        @forelse($actividadesRecientes as $actividad)
+                            <a href="{{ route('docente.cursos.actividades.show', [$actividad->asignacion, $actividad]) }}" class="block p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate">{{ $actividad->titulo }}</p>
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            {{ $actividad->asignacion->curso->nombre }} - {{ $actividad->asignacion->curso->grado }}°{{ $actividad->asignacion->curso->seccion }}
+                                        </p>
+                                        <p class="text-xs text-gray-400 mt-1">{{ $actividad->fecha->format('d/m/Y') }}</p>
+                                    </div>
+                                    <div class="ml-3">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-700">
+                                            {{ $actividad->competencia->nombre }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        @empty
+                            <div class="p-6 text-center">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                 </svg>
+                                <p class="mt-2 text-sm text-gray-500">Aún no has creado actividades</p>
+                                <p class="text-xs text-gray-400 mt-1">Entra a un curso y crea tu primera actividad</p>
                             </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-500">Actividades</p>
-                                <p class="text-2xl font-semibold text-gray-900">
-                                    {{ $asignaciones->sum(fn($a) => $a->actividades->count()) }}
-                                </p>
-                            </div>
-                        </div>
+                        @endforelse
                     </div>
                 </div>
             </div>

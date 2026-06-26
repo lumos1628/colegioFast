@@ -9,6 +9,7 @@ use App\Models\Competencia;
 use App\Models\Docente;
 use App\Models\Matricula;
 use App\Models\Nota;
+use App\Models\PeriodoAcademico;
 
 test('docente puede ver lista de actividades del curso', function () {
     $docente = Docente::factory()->create();
@@ -37,7 +38,14 @@ test('docente puede ver formulario de crear actividad', function () {
 
 test('docente puede crear actividad', function () {
     $docente = Docente::factory()->create();
-    $asignacion = Asignacion::factory()->create(['docente_id' => $docente->id]);
+    $periodo = PeriodoAcademico::factory()->create([
+        'fecha_inicio' => '2024-06-01',
+        'fecha_fin' => '2024-06-30',
+    ]);
+    $asignacion = Asignacion::factory()->create([
+        'docente_id' => $docente->id,
+        'periodo_academico_id' => $periodo->id,
+    ]);
     $competencia = Competencia::factory()->create();
     $capacidad = Capacidad::factory()->create(['competencia_id' => $competencia->id]);
 
@@ -140,7 +148,14 @@ test('calificaciones se actualizan si ya existen', function () {
 test('docente no puede crear actividad en curso de otro docente', function () {
     $docente1 = Docente::factory()->create();
     $docente2 = Docente::factory()->create();
-    $asignacion = Asignacion::factory()->create(['docente_id' => $docente2->id]);
+    $periodo = PeriodoAcademico::factory()->create([
+        'fecha_inicio' => '2024-06-01',
+        'fecha_fin' => '2024-06-30',
+    ]);
+    $asignacion = Asignacion::factory()->create([
+        'docente_id' => $docente2->id,
+        'periodo_academico_id' => $periodo->id,
+    ]);
     $competencia = Competencia::factory()->create();
     $capacidad = Capacidad::factory()->create(['competencia_id' => $competencia->id]);
 

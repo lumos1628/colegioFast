@@ -60,7 +60,7 @@ it('redirects alumno to alumno dashboard', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('alumno', absolute: false));
+    $response->assertRedirect(route('alumno.dashboard', absolute: false));
 });
 
 it('redirects padre to padre dashboard', function () {
@@ -72,7 +72,7 @@ it('redirects padre to padre dashboard', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('padre', absolute: false));
+    $response->assertRedirect(route('padre.dashboard', absolute: false));
 });
 
 it('redirects psicologo to psicologo dashboard', function () {
@@ -84,5 +84,5 @@ it('redirects psicologo to psicologo dashboard', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('psicologo', absolute: false));
+    $response->assertRedirect(route('psicologo.dashboard', absolute: false));
 });
