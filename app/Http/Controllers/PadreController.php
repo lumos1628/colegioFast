@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Actividad;
 use App\Models\Alumno;
+use App\Models\Matricula;
 use App\Models\Nota;
 use App\Models\NotaBimestral;
 use App\Models\Notificacion;
@@ -37,6 +39,7 @@ class PadreController extends Controller
             return view('padre.dashboard', array_merge($data, [
                 'progresoPorHijo' => collect(),
                 'notificacionesRecientes' => collect(),
+                'actividadesPendientes' => collect(),
             ]));
         }
 
@@ -59,9 +62,29 @@ class PadreController extends Controller
             ->take(5)
             ->get();
 
+        $hijoIds = $hijos->pluck('id');
+        $asignacionIds = Matricula::whereIn('alumno_id', $hijoIds)
+            ->whereHas('asignacion.periodoAcademico', fn ($q) => $q->where('activo', true))
+            ->pluck('asignacion_id')
+            ->unique();
+
+        $actividadesPendientes = Actividad::whereIn('asignacion_id', $asignacionIds)
+            ->where('fecha', '>=', now()->toDateString())
+            ->with(['asignacion.curso', 'competencia', 'notas' => fn ($q) => $q->whereIn('alumno_id', $hijoIds)])
+            ->orderBy('fecha', 'asc')
+            ->get()
+            ->filter(function ($actividad) use ($hijoIds) {
+                $alumnosConNota = $actividad->notas->pluck('alumno_id')->unique();
+
+                return $alumnosConNota->count() < $hijoIds->count();
+            })
+            ->take(10)
+            ->values();
+
         return view('padre.dashboard', array_merge($data, [
             'progresoPorHijo' => $progresoPorHijo,
             'notificacionesRecientes' => $notificacionesRecientes,
+            'actividadesPendientes' => $actividadesPendientes,
         ]));
     }
 

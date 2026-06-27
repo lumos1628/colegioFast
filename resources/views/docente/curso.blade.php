@@ -8,28 +8,10 @@
 
         {{-- Header --}}
         <div class="mb-8">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">{{ $asignacion->curso->nombre }}</h1>
-                    <p class="mt-1 text-sm text-gray-500">
-                        {{ $asignacion->curso->grado }}° "{{ $asignacion->curso->seccion }}" • {{ $asignacion->periodoAcademico->nombre }}
-                    </p>
-                </div>
-                <div class="flex gap-3 shrink-0">
-                    <x-button variant="secondary" :href="route('docente.cursos.reporte', $asignacion)">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Exportar Excel
-                    </x-button>
-                    <x-button variant="success" :href="route('docente.cursos.asistencia.index', $asignacion)">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Asistencia
-                    </x-button>
-                </div>
-            </div>
+            <h1 class="text-2xl font-bold text-gray-900">{{ $asignacion->curso->nombre }}</h1>
+            <p class="mt-1 text-sm text-gray-500">
+                {{ $asignacion->curso->grado }}° "{{ $asignacion->curso->seccion }}" • {{ $asignacion->periodoAcademico->nombre }}
+            </p>
         </div>
 
         {{-- Layout de dos columnas --}}
@@ -90,7 +72,23 @@
             {{-- Columna derecha: Estadísticas --}}
             <div class="w-full lg:w-80 shrink-0 lg:sticky top-8 self-start">
                 <div class="space-y-4">
-                    {{-- Botón expandible de Actividades --}}
+                    <a href="{{ route('docente.cursos.asistencia.index', $asignacion) }}" class="block bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <div class="p-4 flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                </svg>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <p class="text-sm font-semibold text-gray-900">Registrar Asistencia</p>
+                                <p class="text-xs text-gray-500 mt-0.5">Registra la asistencia del día</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </a>
+
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                         <button id="toggle-actividades" class="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
                             <div class="flex items-center">
@@ -132,6 +130,59 @@
                                 </a>
                             @endif
                         </div>
+                    </div>
+
+                    <a href="{{ route('docente.cursos.actividades.create', $asignacion) }}" class="block bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <div class="p-4 flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <p class="text-sm font-semibold text-gray-900">Crear Actividad</p>
+                                <p class="text-xs text-gray-500 mt-0.5">Crea una nueva actividad o evaluación</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('docente.cursos.actividades.index', $asignacion) }}" class="block bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <div class="p-4 flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <p class="text-sm font-semibold text-gray-900">Calificar Actividades</p>
+                                <p class="text-xs text-gray-500 mt-0.5">Registra notas de actividades pendientes</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </a>
+
+                    <div class="mt-6">
+                        <a href="{{ route('docente.cursos.reporte', $asignacion) }}" class="block bg-blue-50/50 rounded-lg shadow-sm border-2 border-dashed border-blue-300 hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                            <div class="p-4 flex items-center">
+                                <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <p class="text-sm font-semibold text-blue-900">Exportar Excel</p>
+                                    <p class="text-xs text-blue-700 mt-0.5">Descarga el reporte completo del curso</p>
+                                </div>
+                                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
                     </div>
 
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">

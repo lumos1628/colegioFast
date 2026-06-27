@@ -62,11 +62,11 @@
             <div class="w-full lg:w-80 shrink-0 lg:sticky top-8 self-start">
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 max-h-[calc(100vh-6rem)] overflow-y-auto">
                     <div class="border-b border-gray-200 px-4 sm:px-6 py-4">
-                        <h3 class="text-lg font-semibold text-gray-900">Mis últimas actividades</h3>
-                        <p class="text-sm text-gray-500 mt-1">Actividades creadas recientemente</p>
+                        <h3 class="text-lg font-semibold text-gray-900">Tareas pendientes</h3>
+                        <p class="text-sm text-gray-500 mt-1">Ordenadas por fecha de vencimiento</p>
                     </div>
                     <div class="divide-y divide-gray-200">
-                        @forelse($actividadesRecientes as $actividad)
+                        @forelse($actividadesPendientes as $actividad)
                             <a href="{{ route('docente.cursos.actividades.show', [$actividad->asignacion, $actividad]) }}" class="block p-4 hover:bg-gray-50 transition-colors">
                                 <div class="flex items-start justify-between">
                                     <div class="flex-1 min-w-0">
@@ -74,7 +74,14 @@
                                         <p class="text-xs text-gray-500 mt-1">
                                             {{ $actividad->asignacion->curso->nombre }} - {{ $actividad->asignacion->curso->grado }}°{{ $actividad->asignacion->curso->seccion }}
                                         </p>
-                                        <p class="text-xs text-gray-400 mt-1">{{ $actividad->fecha->format('d/m/Y') }}</p>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <p class="text-xs text-gray-400">{{ $actividad->fecha->format('d/m/Y') }}</p>
+                                            @if($actividad->fecha->isToday())
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-700">Hoy</span>
+                                            @elseif($actividad->fecha->lte(now()->addDays(7)))
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-700">Esta semana</span>
+                                            @endif
+                                        </div>
                                     </div>
                                     <div class="ml-3">
                                         <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-700">
@@ -86,10 +93,10 @@
                         @empty
                             <div class="p-6 text-center">
                                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <p class="mt-2 text-sm text-gray-500">Aún no has creado actividades</p>
-                                <p class="text-xs text-gray-400 mt-1">Entra a un curso y crea tu primera actividad</p>
+                                <p class="mt-2 text-sm text-gray-500">No tienes tareas pendientes</p>
+                                <p class="text-xs text-gray-400 mt-1">Todas tus actividades están al día</p>
                             </div>
                         @endforelse
                     </div>

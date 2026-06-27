@@ -44,7 +44,7 @@ class DocenteController extends Controller
         if (! $docente) {
             return view('docente.dashboard', array_merge($data, [
                 'asignaciones' => collect(),
-                'actividadesRecientes' => collect(),
+                'actividadesPendientes' => collect(),
                 'fecha' => now(),
             ]));
         }
@@ -57,18 +57,19 @@ class DocenteController extends Controller
             ->orderBy('hora_inicio')
             ->get();
 
-        $actividadesRecientes = Actividad::whereHas('asignacion', function ($q) use ($docente) {
+        $actividadesPendientes = Actividad::whereHas('asignacion', function ($q) use ($docente) {
             $q->where('docente_id', $docente->id)
                 ->whereHas('periodoAcademico', fn ($pq) => $pq->where('activo', true));
         })
             ->with(['asignacion.curso', 'competencia'])
-            ->orderBy('fecha', 'desc')
+            ->where('fecha', '>=', now()->toDateString())
+            ->orderBy('fecha', 'asc')
             ->take(10)
             ->get();
 
         return view('docente.dashboard', array_merge($data, [
             'asignaciones' => $asignaciones,
-            'actividadesRecientes' => $actividadesRecientes,
+            'actividadesPendientes' => $actividadesPendientes,
             'fecha' => now(),
         ]));
     }

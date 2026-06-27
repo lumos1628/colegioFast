@@ -10,13 +10,13 @@
         @csrf
 
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 mb-4">
-                <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 mb-4 shadow-lg shadow-indigo-500/30">
+                <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
             </div>
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Iniciar Sesión</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1.5">Accede a tu portal educativo</p>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Bienvenido a colegioFast</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Ingresa tus credenciales para acceder al sistema</p>
         </div>
 
         <div class="space-y-5">
@@ -138,6 +138,19 @@
                 @endforeach
             </div>
             <p class="text-[10px] text-center text-gray-400 dark:text-gray-500 mt-3">El sistema detecta tu rol automáticamente</p>
+            
+            {{-- Información institucional --}}
+            <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700/30">
+                <div class="flex items-center justify-center space-x-2 text-[10px] text-gray-400 dark:text-gray-500">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <span>Sistema seguro con encriptación bcrypt</span>
+                </div>
+                <p class="text-[10px] text-center text-gray-400 dark:text-gray-500 mt-2">
+                    Alineado al Currículo Nacional de Educación Básica (CNEB) - MINEDU
+                </p>
+            </div>
         </div>
     </form>
 </x-guest-layout>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Actividad;
 use App\Models\Asignacion;
 use App\Models\Matricula;
 use App\Models\Nota;
@@ -41,6 +42,7 @@ class AlumnoController extends Controller
             return view('alumno.dashboard', array_merge($data, [
                 'matriculas' => collect(),
                 'progresoBimestral' => collect(),
+                'actividadesPendientes' => collect(),
             ]));
         }
 
@@ -53,9 +55,22 @@ class AlumnoController extends Controller
             ->with(['asignacion.curso', 'competencia'])
             ->get();
 
+        $actividadesPendientes = Actividad::whereHas('asignacion', function ($q) use ($alumno) {
+            $q->whereIn('id', Matricula::where('alumno_id', $alumno->id)
+                ->whereHas('asignacion.periodoAcademico', fn ($pq) => $pq->where('activo', true))
+                ->pluck('asignacion_id'));
+        })
+            ->whereDoesntHave('notas', fn ($q) => $q->where('alumno_id', $alumno->id))
+            ->where('fecha', '>=', now()->toDateString())
+            ->with(['asignacion.curso', 'competencia'])
+            ->orderBy('fecha', 'asc')
+            ->take(10)
+            ->get();
+
         return view('alumno.dashboard', array_merge($data, [
             'matriculas' => $matriculas,
             'progresoBimestral' => $progresoBimestral,
+            'actividadesPendientes' => $actividadesPendientes,
         ]));
     }
 

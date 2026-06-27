@@ -80,42 +80,53 @@
             <div class="w-full lg:w-80 shrink-0 lg:sticky top-8 self-start">
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 max-h-[calc(100vh-6rem)] overflow-y-auto">
                     <div class="border-b border-gray-200 px-4 sm:px-6 py-4">
-                        <h3 class="text-lg font-semibold text-gray-900">Últimas notificaciones</h3>
-                        <p class="text-sm text-gray-500 mt-1">Alertas recientes</p>
+                        <h3 class="text-lg font-semibold text-gray-900">Tareas pendientes</h3>
+                        <p class="text-sm text-gray-500 mt-1">Ordenadas por fecha de vencimiento</p>
                     </div>
                     <div class="divide-y divide-gray-200">
-                        @forelse($notificacionesRecientes as $notificacion)
-                            <div class="p-4 {{ $notificacion->leido ? 'bg-white' : 'bg-violet-50' }}">
-                                <div class="flex items-start">
+                        @forelse($actividadesPendientes as $actividad)
+                            @php
+                                $hijosSinNota = $actividad->notas->pluck('alumno_id')->unique();
+                                $hijosPendientes = $hijos->filter(fn ($h) => !$hijosSinNota->contains($h->id));
+                            @endphp
+                            <div class="p-4">
+                                <div class="flex items-start justify-between">
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm text-gray-900 {{ $notificacion->leido ? '' : 'font-medium' }}">
-                                            {{ $notificacion->mensaje }}
-                                        </p>
+                                        <p class="text-sm font-medium text-gray-900 truncate">{{ $actividad->titulo }}</p>
                                         <p class="text-xs text-gray-500 mt-1">
-                                            {{ $notificacion->created_at->diffForHumans() }}
+                                            {{ $actividad->asignacion->curso->nombre }} - {{ $actividad->asignacion->curso->grado }}°{{ $actividad->asignacion->curso->seccion }}
                                         </p>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <p class="text-xs text-gray-400">{{ $actividad->fecha->format('d/m/Y') }}</p>
+                                            @if($actividad->fecha->isToday())
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-700">Hoy</span>
+                                            @elseif($actividad->fecha->lte(now()->addDays(7)))
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-700">Esta semana</span>
+                                            @endif
+                                        </div>
+                                        @if($hijosPendientes->isNotEmpty())
+                                            <p class="text-xs text-violet-600 mt-1">
+                                                {{ $hijosPendientes->pluck('nombres')->implode(', ') }}
+                                            </p>
+                                        @endif
                                     </div>
-                                    @if(! $notificacion->leido)
-                                        <span class="ml-2 w-2 h-2 rounded-full bg-violet-600"></span>
-                                    @endif
+                                    <div class="ml-3">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-violet-100 text-violet-700">
+                                            {{ $actividad->competencia->nombre }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         @empty
                             <div class="p-6 text-center">
                                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <p class="mt-2 text-sm text-gray-500">Sin notificaciones</p>
+                                <p class="mt-2 text-sm text-gray-500">No hay tareas pendientes</p>
+                                <p class="text-xs text-gray-400 mt-1">Todas las actividades están al día</p>
                             </div>
                         @endforelse
                     </div>
-                    @if($notificacionesRecientes->isNotEmpty())
-                        <div class="border-t border-gray-200 px-4 py-3">
-                            <a href="{{ route('padre.notificaciones') }}" class="text-sm text-violet-600 hover:text-violet-800 font-medium">
-                                Ver todas las notificaciones →
-                            </a>
-                        </div>
-                    @endif
                 </div>
             </div>
         </div>

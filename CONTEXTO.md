@@ -135,6 +135,12 @@ desarrollado y el que más debe sentirse simple e intuitivo.
       vista de curso y ficha de alumno: contenido principal a la izquierda con
       scroll, estadísticas a la derecha en columna sticky (fija al hacer scroll).
       Tarjetas de curso completamente clickeables (toda la tarjeta es un enlace).
+- [x] **Login educativo mejorado (CUS-01)** — Rediseño del login con layout split-screen:
+      panel visual izquierdo con gradiente animado, logo personalizado (birrete + libro),
+      features destacados del sistema, referencia al CNEB/MINEDU. Panel derecho con
+      formulario mejorado con branding educativo, badges de roles, información de
+      seguridad (bcrypt) y referencia institucional. Responsive: en mobile el panel
+      visual se oculta y muestra logo compacto.
 - [x] **Datos de prueba expandidos** — 96 cursos (6 grados × 2 secciones × 8 materias),
       108 asignaciones distribuidas equitativamente entre 6 docentes (18 cursos por
       docente, 3-5 cursos por día). Botones de cerrar sesión visibles en dashboard,
