@@ -38,14 +38,14 @@
         @else
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($actividades as $actividad)
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                    <a href="{{ route('docente.cursos.actividades.show', [$asignacion, $actividad]) }}" class="block bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200 cursor-pointer">
                         <div class="p-6">
                             <div class="flex items-start justify-between mb-4">
-                                <div class="flex-1">
+                                <div class="flex-1 min-w-0">
                                     <h3 class="text-lg font-semibold text-gray-900 line-clamp-2">{{ $actividad->titulo }}</h3>
                                     <p class="text-sm text-gray-500 mt-1">{{ $actividad->fecha->format('d/m/Y') }}</p>
                                 </div>
-                                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white">
+                                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white shrink-0">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                     </svg>
@@ -57,7 +57,7 @@
                                     <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    {{ $actividad->competencia->nombre }}
+                                    <span class="truncate">{{ $actividad->competencia->nombre }}</span>
                                 </div>
                                 <div class="flex items-center text-sm text-gray-600">
                                     <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,13 +75,13 @@
                                     <span class="text-gray-600">{{ $actividad->notas->count() }} notas</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <a href="{{ route('docente.cursos.actividades.edit', [$asignacion, $actividad]) }}"
+                                    <button type="button" onclick="event.stopPropagation(); window.location.href='{{ route('docente.cursos.actividades.edit', [$asignacion, $actividad]) }}'"
                                        class="text-gray-400 hover:text-blue-600 transition-colors" title="Editar">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
-                                    </a>
-                                    <form action="{{ route('docente.cursos.actividades.destroy', [$asignacion, $actividad]) }}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar esta actividad?')">
+                                    </button>
+                                    <form action="{{ route('docente.cursos.actividades.destroy', [$asignacion, $actividad]) }}" method="POST" class="inline" onsubmit="event.stopPropagation(); return confirm('¿Eliminar esta actividad?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors" title="Eliminar">
@@ -90,14 +90,10 @@
                                             </svg>
                                         </button>
                                     </form>
-                                    <a href="{{ route('docente.cursos.actividades.show', [$asignacion, $actividad]) }}"
-                                       class="text-sm font-medium text-blue-600 hover:text-blue-800">
-                                        Ver detalle →
-                                    </a>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 @endforeach
             </div>
         @endif

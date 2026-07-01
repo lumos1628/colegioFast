@@ -7,48 +7,88 @@ use App\Models\Asignacion;
 use App\Models\Asistencia;
 use App\Models\Matricula;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class AsistenciaSeeder extends Seeder
 {
     public function run(): void
     {
-        $asignaciones = Asignacion::all();
+        $hoy = Carbon::today();
+        $diasHabiles = $this->ultimosDiasHabiles($hoy, 30);
+
+        $asignaciones = Asignacion::with('periodoAcademico')->get();
 
         foreach ($asignaciones as $asignacion) {
             $matriculas = Matricula::where('asignacion_id', $asignacion->id)->get();
-            $fechas = collect();
 
-            for ($i = 0; $i < 10; $i++) {
-                $fechas->push(now()->subDays(rand(1, 60))->format('Y-m-d'));
+            if ($matriculas->isEmpty()) {
+                continue;
             }
 
-            foreach ($matriculas as $matricula) {
-                foreach ($fechas as $fecha) {
-                    if (! Asistencia::where('alumno_id', $matricula->alumno_id)
-                        ->where('asignacion_id', $asignacion->id)
-                        ->where('fecha', $fecha)
-                        ->exists()) {
-                        $estado = fake()->randomElement([
-                            AsistenciaEstado::Presente,
-                            AsistenciaEstado::Presente,
-                            AsistenciaEstado::Presente,
-                            AsistenciaEstado::Tardanza,
-                            AsistenciaEstado::Ausente,
-                            AsistenciaEstado::Justificado,
-                        ]);
+            $diaSemana = $asignacion->dia_semana;
 
-                        Asistencia::create([
-                            'alumno_id' => $matricula->alumno_id,
-                            'asignacion_id' => $asignacion->id,
-                            'fecha' => $fecha,
-                            'estado' => $estado,
-                            'observacion' => $estado === AsistenciaEstado::Justificado
-                                ? fake()->sentence()
-                                : null,
-                        ]);
-                    }
+            $fechasClase = collect($diasHabiles)->filter(function ($fecha) use ($diaSemana, $asignacion) {
+                if ($fecha->dayOfWeekIso !== $diaSemana) {
+                    return false;
+                }
+                $periodo = $asignacion->periodoAcademico;
+                if ($periodo && $fecha->lessThan($periodo->fecha_inicio)) {
+                    return false;
+                }
+                if ($periodo && $fecha->greaterThan($periodo->fecha_fin)) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            foreach ($matriculas as $matricula) {
+                foreach ($fechasClase as $fecha) {
+                    $estado = $this->estadoAleatorio();
+
+                    Asistencia::create([
+                        'alumno_id' => $matricula->alumno_id,
+                        'asignacion_id' => $asignacion->id,
+                        'fecha' => $fecha->format('Y-m-d'),
+                        'estado' => $estado,
+                        'observacion' => in_array($estado, [AsistenciaEstado::Ausente, AsistenciaEstado::Justificado])
+                            ? fake()->optional(0.5)->sentence()
+                            : null,
+                    ]);
                 }
             }
         }
+    }
+
+    private function ultimosDiasHabiles(Carbon $fechaFin, int $cantidad): array
+    {
+        $dias = [];
+        $fecha = $fechaFin->copy();
+
+        while (count($dias) < $cantidad) {
+            if ($fecha->dayOfWeekIso <= 5) {
+                $dias[] = $fecha->copy();
+            }
+            $fecha->subDay();
+        }
+
+        return $dias;
+    }
+
+    private function estadoAleatorio(): AsistenciaEstado
+    {
+        $rand = mt_rand(1, 100);
+
+        if ($rand <= 88) {
+            return AsistenciaEstado::Presente;
+        }
+        if ($rand <= 92) {
+            return AsistenciaEstado::Tardanza;
+        }
+        if ($rand <= 97) {
+            return AsistenciaEstado::Ausente;
+        }
+
+        return AsistenciaEstado::Justificado;
     }
 }

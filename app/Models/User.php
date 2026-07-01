@@ -37,7 +37,7 @@ class User extends Authenticatable
     {
         return $this->role instanceof UserRole
             ? route($this->role->redirectRoute(), absolute: false)
-            : route('dashboard', absolute: false);
+            : route('profile.edit', absolute: false);
     }
 
     public function docente(): HasOne

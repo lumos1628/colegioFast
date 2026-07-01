@@ -11,9 +11,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $users = [
-            ['name' => 'Admin',      'email' => 'admin@colegio.com',      'role' => 'admin'],
             ['name' => 'Director',   'email' => 'director@colegio.com',   'role' => 'director'],
-            ['name' => 'Secretaria', 'email' => 'secretaria@colegio.com', 'role' => 'secretaria'],
             ['name' => 'Docente',    'email' => 'docente@colegio.com',    'role' => 'docente'],
             ['name' => 'Psicólogo',  'email' => 'psicologo@colegio.com',  'role' => 'psicologo'],
             ['name' => 'Alumno',     'email' => 'alumno@colegio.com',     'role' => 'alumno'],

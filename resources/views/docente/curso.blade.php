@@ -90,23 +90,18 @@
                     </a>
 
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                        <button id="toggle-actividades" class="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                    </svg>
-                                </div>
-                                <div class="ml-3 text-left">
-                                    <p class="text-sm font-semibold text-gray-900">Actividades</p>
-                                    <p class="text-xs text-gray-500">{{ $actividadesRecientes->count() }} actividades recientes</p>
-                                </div>
+                        <div class="w-full flex items-center p-4">
+                            <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
                             </div>
-                            <svg class="w-5 h-5 text-gray-400 chevron transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                        <div id="lista-actividades" class="hidden border-t border-gray-200">
+                            <div class="ml-3 text-left">
+                                <p class="text-sm font-semibold text-gray-900">Actividades</p>
+                                <p class="text-xs text-gray-500">{{ $actividadesRecientes->count() }} actividades recientes</p>
+                            </div>
+                        </div>
+                        <div id="lista-actividades" class="border-t border-gray-200">
                             @forelse($actividadesRecientes as $actividad)
                                 <a href="{{ route('docente.cursos.actividades.show', [$asignacion, $actividad]) }}" class="block p-4 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0">
                                     <div class="flex items-start justify-between">
@@ -114,7 +109,7 @@
                                             <p class="text-sm font-medium text-gray-900 truncate">{{ $actividad->titulo }}</p>
                                             <p class="text-xs text-gray-500 mt-1">{{ $actividad->fecha->format('d/m/Y') }}</p>
                                         </div>
-                                        <span class="ml-3 inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-700">
+                                        <span class="ml-3 inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-700 max-w-24 truncate" title="{{ $actividad->competencia->nombre }}">
                                             {{ $actividad->competencia->nombre }}
                                         </span>
                                     </div>
@@ -124,11 +119,6 @@
                                     <p class="text-sm text-gray-500">Sin actividades creadas</p>
                                 </div>
                             @endforelse
-                            @if($actividadesRecientes->isNotEmpty())
-                                <a href="{{ route('docente.cursos.actividades.index', $asignacion) }}" class="block p-3 text-center text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors border-t border-gray-100">
-                                    Ver todas las actividades →
-                                </a>
-                            @endif
                         </div>
                     </div>
 
@@ -223,11 +213,6 @@
     </div>
 
     <script>
-        document.getElementById('toggle-actividades').addEventListener('click', function() {
-            document.getElementById('lista-actividades').classList.toggle('hidden');
-            this.querySelector('.chevron').classList.toggle('rotate-180');
-        });
-
         document.getElementById('buscar-alumno').addEventListener('input', function(e) {
             const filtro = e.target.value.toLowerCase();
             document.querySelectorAll('.alumno-item').forEach(item => {

@@ -4,6 +4,7 @@ use App\Models\Asignacion;
 use App\Models\Docente;
 use App\Models\Matricula;
 use App\Models\PeriodoAcademico;
+use Carbon\Carbon;
 
 test('docente autenticado puede ver su dashboard', function () {
     $docente = Docente::factory()->create();
@@ -12,7 +13,12 @@ test('docente autenticado puede ver su dashboard', function () {
         ->get(route('docente.dashboard'));
 
     $response->assertOk();
-    $response->assertSee('Mis Cursos de Hoy');
+
+    if (now()->dayOfWeekIso >= 6) {
+        $response->assertSee('Mis Cursos del Lunes');
+    } else {
+        $response->assertSee('Mis Cursos de Hoy');
+    }
 });
 
 test('dashboard muestra cursos del periodo activo', function () {
@@ -75,4 +81,26 @@ test('usuario no autenticado no puede acceder al dashboard', function () {
     $response = $this->get(route('docente.dashboard'));
 
     $response->assertRedirect('/login');
+});
+
+test('en sabado muestra cursos del lunes', function () {
+    Carbon::setTestNow(Carbon::parse('2026-06-27'));
+
+    $docente = Docente::factory()->create();
+    $periodo = PeriodoAcademico::factory()->create(['activo' => true]);
+
+    $asignacionLunes = Asignacion::factory()->create([
+        'docente_id' => $docente->id,
+        'periodo_academico_id' => $periodo->id,
+        'dia_semana' => 1,
+    ]);
+
+    $response = $this->actingAs($docente->user)
+        ->get(route('docente.dashboard'));
+
+    $response->assertOk();
+    $response->assertSee('Mis Cursos del Lunes');
+    $response->assertSee($asignacionLunes->curso->nombre);
+
+    Carbon::setTestNow();
 });

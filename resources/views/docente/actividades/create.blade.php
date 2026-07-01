@@ -52,54 +52,51 @@
                             Fecha de clase <span class="text-red-500">*</span>
                         </label>
 
-                        @if($proximasFechas->isNotEmpty())
-                            <div class="space-y-2 mb-3">
-                                @foreach($proximasFechas as $index => $fecha)
-                                    <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors fecha-option">
-                                        <input type="radio" name="fecha_option" value="{{ $fecha->format('Y-m-d') }}"
-                                               class="fecha-radio h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                                               {{ old('fecha_option', $index === 0 ? $proximasFechas->first()->format('Y-m-d') : '') === $fecha->format('Y-m-d') ? 'checked' : '' }}>
-                                        <input type="hidden" name="fecha" value="{{ $index === 0 ? old('fecha', $proximasFechas->first()->format('Y-m-d')) : old('fecha') }}" class="fecha-input">
-                                        <div class="ml-3">
-                                            <p class="text-sm font-medium text-gray-900">{{ $fecha->locale('es')->isoFormat('dddd, D [de] MMMM') }}</p>
-                                            @if($index === 0)
-                                                <p class="text-xs text-blue-600">Próxima clase</p>
-                                            @endif
-                                        </div>
-                                    </label>
-                                @endforeach
+                        <input type="hidden" name="fecha" id="fecha-hidden" value="{{ old('fecha', $siguienteClase ? $siguienteClase->format('Y-m-d') : '') }}">
 
-                                <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors fecha-option" id="fecha-custom-label">
-                                    <input type="radio" name="fecha_option" value="custom" class="fecha-radio h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" id="fecha-custom-radio">
-                                    <div class="ml-3 flex-1">
-                                        <p class="text-sm font-medium text-gray-900">Usar fecha específica</p>
-                                        <div id="fecha-custom-container" class="mt-2 hidden">
-                                            <input type="date" name="fecha_custom" id="fecha-custom-input"
-                                                   min="{{ $asignacion->periodoAcademico->fecha_inicio->format('Y-m-d') }}"
-                                                   max="{{ $asignacion->periodoAcademico->fecha_fin->format('Y-m-d') }}"
-                                                   value="{{ old('fecha_custom') }}"
-                                                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                        </div>
+                        <div class="space-y-2 mb-3">
+                            {{-- Opción 1: Siguiente clase --}}
+                            @if($siguienteClase)
+                                <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors fecha-option">
+                                    <input type="radio" name="fecha_option" value="siguiente"
+                                           class="fecha-radio h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                           {{ old('fecha_option', 'siguiente') === 'siguiente' ? 'checked' : '' }}>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-900">Siguiente clase</p>
+                                        <p class="text-xs text-blue-600">{{ $siguienteClaseFormateada }}</p>
                                     </div>
                                 </label>
-                            </div>
-                        @else
-                            <div class="mb-3">
-                                <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                                    <input type="radio" name="fecha_option" value="custom" checked class="fecha-radio h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                                    <div class="ml-3 flex-1">
-                                        <p class="text-sm font-medium text-gray-900">Seleccionar fecha</p>
-                                        <div class="mt-2">
-                                            <input type="date" name="fecha_custom" id="fecha-custom-input"
-                                                   min="{{ $asignacion->periodoAcademico->fecha_inicio->format('Y-m-d') }}"
-                                                   max="{{ $asignacion->periodoAcademico->fecha_fin->format('Y-m-d') }}"
-                                                   value="{{ old('fecha_custom', date('Y-m-d')) }}"
-                                                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                        </div>
+                            @endif
+
+                            {{-- Opción 2: Subsiguiente clase --}}
+                            @if($subsiguienteClase)
+                                <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors fecha-option">
+                                    <input type="radio" name="fecha_option" value="subsiguiente"
+                                           class="fecha-radio h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                           {{ old('fecha_option') === 'subsiguiente' ? 'checked' : '' }}>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-900">Subsiguiente clase</p>
+                                        <p class="text-xs text-blue-600">{{ $subsiguienteClaseFormateada }}</p>
                                     </div>
                                 </label>
-                            </div>
-                        @endif
+                            @endif
+
+                            {{-- Opción 3: Fecha personalizada --}}
+                            <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors fecha-option" id="fecha-custom-label">
+                                <input type="radio" name="fecha_option" value="custom" class="fecha-radio h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" id="fecha-custom-radio"
+                                       {{ old('fecha_option') === 'custom' ? 'checked' : '' }}>
+                                <div class="ml-3 flex-1">
+                                    <p class="text-sm font-medium text-gray-900">Fecha personalizada</p>
+                                    <div id="fecha-custom-container" class="mt-2 {{ old('fecha_option') === 'custom' ? '' : 'hidden' }}">
+                                        <input type="date" name="fecha_custom" id="fecha-custom-input"
+                                               min="{{ $asignacion->periodoAcademico->fecha_inicio->format('Y-m-d') }}"
+                                               max="{{ $asignacion->periodoAcademico->fecha_fin->format('Y-m-d') }}"
+                                               value="{{ old('fecha_custom') }}"
+                                               class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
 
                         @error('fecha')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -192,6 +189,10 @@
         const fechaCustomContainer = document.getElementById('fecha-custom-container');
         const fechaCustomInput = document.getElementById('fecha-custom-input');
         const fechaOptions = document.querySelectorAll('.fecha-option');
+        const fechaHidden = document.getElementById('fecha-hidden');
+
+        const siguienteClase = '{{ $siguienteClase ? $siguienteClase->format("Y-m-d") : "" }}';
+        const subsiguienteClase = '{{ $subsiguienteClase ? $subsiguienteClase->format("Y-m-d") : "" }}';
 
         function updateFechaSelection() {
             fechaOptions.forEach(option => {
@@ -209,9 +210,24 @@
             }
 
             if (fechaCustomRadio && fechaCustomRadio.checked) {
-                fechaCustomContainer.classList.remove('hidden');
-            } else if (fechaCustomContainer) {
-                fechaCustomContainer.classList.add('hidden');
+                if (fechaCustomContainer) {
+                    fechaCustomContainer.classList.remove('hidden');
+                }
+                if (fechaCustomInput && fechaCustomInput.value) {
+                    fechaHidden.value = fechaCustomInput.value;
+                }
+            } else {
+                if (fechaCustomContainer) {
+                    fechaCustomContainer.classList.add('hidden');
+                }
+
+                if (selectedRadio) {
+                    if (selectedRadio.value === 'siguiente') {
+                        fechaHidden.value = siguienteClase;
+                    } else if (selectedRadio.value === 'subsiguiente') {
+                        fechaHidden.value = subsiguienteClase;
+                    }
+                }
             }
         }
 
@@ -221,6 +237,7 @@
 
         if (fechaCustomInput) {
             fechaCustomInput.addEventListener('change', function() {
+                fechaHidden.value = this.value;
                 if (fechaCustomRadio) {
                     fechaCustomRadio.checked = true;
                     updateFechaSelection();
@@ -229,31 +246,10 @@
         }
 
         document.querySelector('form').addEventListener('submit', function(e) {
-            const selectedRadio = document.querySelector('.fecha-radio:checked');
-            const fechaInputs = document.querySelectorAll('input[name="fecha"]');
-
-            fechaInputs.forEach(input => {
-                if (input.type === 'hidden') {
-                    input.remove();
-                }
-            });
-
-            if (selectedRadio) {
-                if (selectedRadio.value === 'custom') {
-                    if (fechaCustomInput && fechaCustomInput.value) {
-                        const hiddenInput = document.createElement('input');
-                        hiddenInput.type = 'hidden';
-                        hiddenInput.name = 'fecha';
-                        hiddenInput.value = fechaCustomInput.value;
-                        this.appendChild(hiddenInput);
-                    }
-                } else {
-                    const hiddenInput = document.createElement('input');
-                    hiddenInput.type = 'hidden';
-                    hiddenInput.name = 'fecha';
-                    hiddenInput.value = selectedRadio.value;
-                    this.appendChild(hiddenInput);
-                }
+            if (!fechaHidden.value) {
+                e.preventDefault();
+                alert('Por favor selecciona una fecha para la actividad.');
+                return false;
             }
         });
 

@@ -12,108 +12,119 @@ class AsignacionSeeder extends Seeder
 {
     public function run(): void
     {
-        $periodoActivo = PeriodoAcademico::where('activo', true)->first();
-        $periodoCerrado = PeriodoAcademico::where('activo', false)->first();
-
-        $docentes = Docente::all();
+        $periodos = PeriodoAcademico::all();
         $cursos = Curso::all();
+        $docentes = Docente::all();
 
-        if (! $periodoActivo || $docentes->isEmpty()) {
-            return;
+        $docenteData = [];
+        foreach ($docentes as $docente) {
+            $grados = $this->parseGrados($docente->telefono);
+            $docenteData[] = [
+                'id' => $docente->id,
+                'especialidad' => $docente->especialidad,
+                'grados' => $grados,
+            ];
         }
 
-        // Horarios disponibles por día (máximo 4 cursos por día)
-        $horariosPorDia = [
-            1 => [
-                ['inicio' => '08:00', 'fin' => '09:30'],
-                ['inicio' => '10:00', 'fin' => '11:30'],
-                ['inicio' => '12:00', 'fin' => '13:30'],
-                ['inicio' => '14:00', 'fin' => '15:30'],
-            ],
-            2 => [
-                ['inicio' => '08:00', 'fin' => '09:30'],
-                ['inicio' => '10:00', 'fin' => '11:30'],
-                ['inicio' => '12:00', 'fin' => '13:30'],
-                ['inicio' => '14:00', 'fin' => '15:30'],
-            ],
-            3 => [
-                ['inicio' => '08:00', 'fin' => '09:30'],
-                ['inicio' => '10:00', 'fin' => '11:30'],
-                ['inicio' => '12:00', 'fin' => '13:30'],
-                ['inicio' => '14:00', 'fin' => '15:30'],
-            ],
-            4 => [
-                ['inicio' => '08:00', 'fin' => '09:30'],
-                ['inicio' => '10:00', 'fin' => '11:30'],
-                ['inicio' => '12:00', 'fin' => '13:30'],
-                ['inicio' => '14:00', 'fin' => '15:30'],
-            ],
-            5 => [
-                ['inicio' => '08:00', 'fin' => '09:30'],
-                ['inicio' => '10:00', 'fin' => '11:30'],
-                ['inicio' => '12:00', 'fin' => '13:30'],
-                ['inicio' => '14:00', 'fin' => '15:30'],
-            ],
+        $horarios = [
+            1 => ['08:00', '09:00', '10:00', '11:00', '12:00'],
+            2 => ['08:00', '09:00', '10:00', '11:00', '12:00'],
+            3 => ['08:00', '09:00', '10:00', '11:00', '12:00'],
+            4 => ['08:00', '09:00', '10:00', '11:00', '12:00'],
+            5 => ['08:00', '09:00', '10:00', '11:00', '12:00'],
         ];
 
-        // Contador de cursos asignados por día para cada docente
-        $cursosPorDiaPorDocente = [];
-        foreach ($docentes as $docente) {
-            $cursosPorDiaPorDocente[$docente->id] = [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0];
-        }
+        $duracion = [
+            '08:00' => '09:00',
+            '09:00' => '10:00',
+            '10:00' => '11:00',
+            '11:00' => '12:00',
+            '12:00' => '13:00',
+        ];
 
-        // Distribuir cursos equitativamente
-        $docenteIndex = 0;
+        $cursoDocenteMap = [];
         foreach ($cursos as $curso) {
-            $docente = $docentes[$docenteIndex % $docentes->count()];
-
-            // Encontrar el día con menos cursos para este docente
-            $diaConMenosCursos = $this->getDiaConMenosCursos($cursosPorDiaPorDocente[$docente->id]);
-
-            // Obtener el horario disponible para ese día
-            $horarioIndex = $cursosPorDiaPorDocente[$docente->id][$diaConMenosCursos];
-            $horario = $horariosPorDia[$diaConMenosCursos][$horarioIndex];
-
-            Asignacion::create([
-                'docente_id' => $docente->id,
-                'curso_id' => $curso->id,
-                'periodo_academico_id' => $periodoActivo->id,
-                'dia_semana' => $diaConMenosCursos,
-                'hora_inicio' => $horario['inicio'],
-                'hora_fin' => $horario['fin'],
-            ]);
-
-            $cursosPorDiaPorDocente[$docente->id][$diaConMenosCursos]++;
-            $docenteIndex++;
+            foreach ($docenteData as $dd) {
+                if ($dd['especialidad'] === $curso->area_curricular && in_array($curso->grado, $dd['grados'])) {
+                    $cursoDocenteMap[$curso->id] = $dd['id'];
+                    break;
+                }
+            }
         }
 
-        // Periodo cerrado (opcional, menos cursos)
-        if ($periodoCerrado) {
-            $cursosPeriodoCerrado = $cursos->take(12);
-            foreach ($cursosPeriodoCerrado as $index => $curso) {
-                $docente = $docentes[$index % $docentes->count()];
-                $dia = ($index % 5) + 1;
-                $horarioIndex = intdiv($index, 5) % 4;
-                $horario = $horariosPorDia[$dia][$horarioIndex];
+        $teacherSlots = [];
+        $sectionSlots = [];
+        $sectionDayCount = [];
 
-                Asignacion::create([
-                    'docente_id' => $docente->id,
-                    'curso_id' => $curso->id,
-                    'periodo_academico_id' => $periodoCerrado->id,
-                    'dia_semana' => $dia,
-                    'hora_inicio' => $horario['inicio'],
-                    'hora_fin' => $horario['fin'],
-                ]);
+        foreach ($periodos as $periodo) {
+            $teacherSlots = [];
+            $sectionSlots = [];
+            $sectionDayCount = [];
+
+            $cursosParaPeriodo = $cursos->sortBy(function ($curso) {
+                return $curso->grado * 10 + ord($curso->seccion);
+            });
+
+            foreach ($cursosParaPeriodo as $curso) {
+                $docenteId = $cursoDocenteMap[$curso->id] ?? null;
+                if (! $docenteId) {
+                    continue;
+                }
+
+                $seccionKey = $curso->grado.'-'.$curso->seccion;
+                $assigned = false;
+
+                $diasOrden = $this->ordenDias($seccionKey);
+
+                foreach ($diasOrden as $day) {
+                    if ($assigned) {
+                        break;
+                    }
+                    $dayCount = $sectionDayCount[$seccionKey][$day] ?? 0;
+                    if ($dayCount >= 2) {
+                        continue;
+                    }
+
+                    foreach ($horarios[$day] as $slotStart) {
+                        $slotKey = $day.'-'.$slotStart;
+
+                        $teacherBusy = isset($teacherSlots[$docenteId][$slotKey]);
+                        $sectionBusy = isset($sectionSlots[$seccionKey][$slotKey]);
+
+                        if (! $teacherBusy && ! $sectionBusy) {
+                            Asignacion::create([
+                                'docente_id' => $docenteId,
+                                'curso_id' => $curso->id,
+                                'periodo_academico_id' => $periodo->id,
+                                'dia_semana' => $day,
+                                'hora_inicio' => $slotStart,
+                                'hora_fin' => $duracion[$slotStart],
+                            ]);
+
+                            $teacherSlots[$docenteId][$slotKey] = true;
+                            $sectionSlots[$seccionKey][$slotKey] = true;
+                            $sectionDayCount[$seccionKey][$day] = $dayCount + 1;
+                            $assigned = true;
+                            break;
+                        }
+                    }
+                }
             }
         }
     }
 
-    private function getDiaConMenosCursos(array $cursosPorDia): int
+    private function parseGrados(string $telefono): array
     {
-        $minCursos = min($cursosPorDia);
-        $diasConMin = array_keys($cursosPorDia, $minCursos);
+        preg_match_all('/\d+/', $telefono, $matches);
 
-        // Si hay empate, elegir el día más bajo (Lunes primero)
-        return min($diasConMin);
+        return array_map('intval', $matches[0] ?? []);
+    }
+
+    private function ordenDias(string $seccionKey): array
+    {
+        $dias = [1, 2, 3, 4, 5];
+        $offset = crc32($seccionKey) % 5;
+
+        return array_merge(array_slice($dias, $offset), array_slice($dias, 0, $offset));
     }
 }

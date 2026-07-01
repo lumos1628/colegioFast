@@ -2,7 +2,9 @@
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {{-- Header --}}
         <div class="mb-8">
-            <h1 class="text-2xl font-bold text-gray-900">Mis Cursos de Hoy</h1>
+            <h1 class="text-2xl font-bold text-gray-900">
+                {{ $esFinDeSemana ? 'Mis Cursos del Lunes' : 'Mis Cursos de Hoy' }}
+            </h1>
             <p class="mt-1 text-sm text-gray-500">
                 {{ $fecha->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}
             </p>
@@ -13,8 +15,8 @@
             {{-- Columna izquierda: Cursos --}}
             <div class="flex-1 min-w-0">
                 @if($asignaciones->isEmpty())
-                    <x-alert type="warning" title="Sin clases hoy">
-                        No tienes clases programadas para hoy. Disfruta tu día libre.
+                    <x-alert type="warning" :title="$esFinDeSemana ? 'Sin clases el lunes' : 'Sin clases hoy'">
+                        {{ $esFinDeSemana ? 'No tienes clases programadas para el lunes.' : 'No tienes clases programadas para hoy. Disfruta tu día libre.' }}
                     </x-alert>
                 @else
                     <div class="space-y-4">
@@ -23,8 +25,8 @@
                                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
                                     <div class="p-6">
                                         <div class="flex items-start justify-between">
-                                            <div class="flex-1">
-                                                <h3 class="text-lg font-semibold text-gray-900">{{ $asignacion->curso->nombre }}</h3>
+                                            <div class="flex-1 min-w-0">
+                                                <h3 class="text-lg font-semibold text-gray-900 truncate">{{ $asignacion->curso->nombre }}</h3>
                                                 <p class="text-sm text-gray-500 mt-1">
                                                     {{ $asignacion->curso->grado }}° "{{ $asignacion->curso->seccion }}"
                                                 </p>
@@ -83,8 +85,8 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="ml-3">
-                                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-700">
+                                    <div class="ml-3 shrink-0">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-700 max-w-24 truncate" title="{{ $actividad->competencia->nombre }}">
                                             {{ $actividad->competencia->nombre }}
                                         </span>
                                     </div>

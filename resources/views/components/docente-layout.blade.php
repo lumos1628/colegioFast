@@ -64,8 +64,8 @@
                                 @foreach($cursos as $curso)
                                     <a href="{{ route('docente.cursos.show', $curso) }}"
                                        class="block px-3 py-2 rounded-lg text-sm transition-colors {{ request()->routeIs('docente.cursos.show') && request()->route('docente.cursos.show') == $curso->id ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-gray-700 hover:bg-gray-100' }}">
-                                        <p class="font-medium">{{ $curso->curso->nombre }}</p>
-                                        <p class="text-xs text-gray-500 mt-0.5">
+                                        <p class="font-medium truncate">{{ $curso->curso->nombre }}</p>
+                                        <p class="text-xs text-gray-500 mt-0.5 truncate">
                                             {{ $curso->curso->grado }}°{{ $curso->curso->seccion }}
                                             @if($curso->hora_inicio && $curso->hora_fin)
                                                 • {{ \Carbon\Carbon::parse($curso->hora_inicio)->format('H:i') }}

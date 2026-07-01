@@ -198,14 +198,15 @@ desarrollado y el que más debe sentirse simple e intuitivo.
       `ReporteController` con rutas: `GET /admin/reportes/libreta/{alumno}` y
       `GET /docente/cursos/{asignacion}/reporte`. Botones de descarga agregados
       en vista de curso (docente) y lista de alumnos (admin).
-- [x] **Tests Pest de flujos críticos** — 113 tests pasando (276 aserciones).
+- [x] **Tests Pest de flujos críticos** — 114 tests pasando (279 aserciones).
       Cobertura completa de: ecosistema Alumno (dashboard, privacidad de notas,
       autorización), ecosistema Padre (dashboard, hijos, notificaciones, pagos),
       Back-office Admin (alumnos, padres, periodos, cursos, asignaciones),
       Psicólogo (bitácora con privacidad total), notificaciones automáticas
       (dispatch de jobs al registrar asistencia/notas/incidencias), reportes
       Excel (descarga para docente y admin), e integración entre roles
-      (autorización cruzada).
+      (autorización cruzada). Dashboard docente muestra cursos del lunes en
+      fin de semana (sábado/domingo).
 
 > Actualizar este checklist cada vez que se complete un paso.
 

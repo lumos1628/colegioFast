@@ -46,10 +46,19 @@ class DocenteController extends Controller
                 'asignaciones' => collect(),
                 'actividadesPendientes' => collect(),
                 'fecha' => now(),
+                'esFinDeSemana' => false,
             ]));
         }
 
         $diaSemana = now()->dayOfWeekIso;
+        $fecha = now();
+        $esFinDeSemana = $diaSemana >= 6;
+
+        if ($esFinDeSemana) {
+            $diaSemana = 1;
+            $fecha = now()->next('monday');
+        }
+
         $asignaciones = $docente->asignaciones()
             ->with(['curso', 'periodoAcademico'])
             ->whereHas('periodoAcademico', fn ($q) => $q->where('activo', true))
@@ -59,7 +68,8 @@ class DocenteController extends Controller
 
         $actividadesPendientes = Actividad::whereHas('asignacion', function ($q) use ($docente) {
             $q->where('docente_id', $docente->id)
-                ->whereHas('periodoAcademico', fn ($pq) => $pq->where('activo', true));
+                ->whereHas('periodoAcademico', fn ($pq) => $pq->where('activo', true))
+                ->whereHas('curso', fn ($cq) => $cq->where('area_curricular', '!=', 'Educación Física'));
         })
             ->with(['asignacion.curso', 'competencia'])
             ->where('fecha', '>=', now()->toDateString())
@@ -70,7 +80,8 @@ class DocenteController extends Controller
         return view('docente.dashboard', array_merge($data, [
             'asignaciones' => $asignaciones,
             'actividadesPendientes' => $actividadesPendientes,
-            'fecha' => now(),
+            'fecha' => $fecha,
+            'esFinDeSemana' => $esFinDeSemana,
         ]));
     }
 

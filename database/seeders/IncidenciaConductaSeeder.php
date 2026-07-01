@@ -15,7 +15,7 @@ class IncidenciaConductaSeeder extends Seeder
         $alumnos = Alumno::all();
         $docentes = Docente::all();
 
-        for ($i = 0; $i < 15; $i++) {
+        for ($i = 0; $i < 30; $i++) {
             IncidenciaConducta::create([
                 'alumno_id' => $alumnos->random()->id,
                 'docente_id' => $docentes->random()->id,

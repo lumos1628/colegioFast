@@ -13,41 +13,65 @@ class AlumnoSeeder extends Seeder
     public function run(): void
     {
         $nombres = [
-            'Sofía', 'Valentina', 'Renato', 'Mateo', 'Luciana',
-            'Emilia', 'Sebastián', 'Isabella', 'Nicolás', 'Camila',
-            'Diego', 'Mariana', 'Andrés', 'Gabriela', 'Fernando',
-            'Paula', 'Ricardo', 'Daniela', 'Alejandro', 'Victoria',
-            'Javier', 'Catalina', 'Miguel', 'Antonella', 'Rodrigo',
-            'Martina', 'Tomás', 'Florencia', 'Matías', 'Agustina',
-            'Joaquín', 'Bianca', 'Samuel', 'Emilia', 'Benjamín',
-            'Renata', 'Lucas', 'Aitana', 'Thiago', 'Mía',
+            'Sofía', 'Mateo', 'Valeria', 'Sebastián', 'Renata',
+            'Renzo', 'Luciana', 'Diego', 'Emilia', 'Nicolás',
+            'Valentina', 'Joaquín', 'Mía', 'Matías', 'Antonella',
+            'Sebastián', 'Camila', 'Alejandro', 'Isabella', 'Fernando',
+            'Gabriela', 'Ricardo', 'Daniela', 'Andrés', 'Victoria',
+            'Javier', 'Catalina', 'Miguel', 'Martina', 'Tomás',
+            'Florencia', 'Benjamín', 'Renata', 'Lucas', 'Aitana',
+            'Thiago', 'Mía', 'Santiago', 'Salomé', 'Samuel',
+            'Bianca', 'Emiliano', 'Ariana', 'Jerónimo', 'Ignacia',
+            'Agustín', 'Celeste', 'Felipe', 'Paula', 'Maximiliano',
         ];
 
         $apellidos = [
-            'García', 'Rodríguez', 'Martínez', 'López', 'González',
-            'Hernández', 'Pérez', 'Sánchez', 'Ramírez', 'Torres',
-            'Flores', 'Rivera', 'Gómez', 'Díaz', 'Reyes',
-            'Morales', 'Vargas', 'Castro', 'Ortiz', 'Silva',
+            'Huamán', 'Quispe', 'Condori', 'Mamani', 'Chávez',
+            'Rojas', 'Flores', 'Medina', 'Torres', 'Vargas',
+            'Guzmán', 'Paredes', 'Salazar', 'Contreras', 'Delgado',
+            'Campos', 'Vega', 'Castillo', 'Acosta', 'Suárez',
         ];
 
-        for ($i = 0; $i < 40; $i++) {
-            $user = User::factory()->create([
-                'name' => $nombres[$i].' '.$apellidos[$i % count($apellidos)],
-                'email' => 'alumno'.($i + 1).'@colegio.com',
-                'role' => UserRole::Alumno,
-                'password' => Hash::make('password'),
-            ]);
+        $grados = [1, 2, 3, 4, 5, 6];
+        $secciones = ['A', 'B'];
+        $alumnosPorSeccion = 25;
+        $dniBase = 70000001;
+        $alumnoIndex = 0;
 
-            Alumno::create([
-                'user_id' => $user->id,
-                'nombres' => $nombres[$i],
-                'apellido_paterno' => $apellidos[$i % count($apellidos)],
-                'apellido_materno' => $apellidos[($i + 5) % count($apellidos)],
-                'fecha_nacimiento' => fake()->dateTimeBetween('-12 years', '-6 years'),
-                'dni' => str_pad((string) ($i + 100), 8, '0', STR_PAD_LEFT),
-                'grado' => fake()->numberBetween(1, 3),
-                'seccion' => 'A',
-            ]);
+        foreach ($grados as $grado) {
+            $anioNacimiento = 2020 - $grado;
+            $anioFin = $anioNacimiento + 1;
+
+            foreach ($secciones as $seccion) {
+                for ($i = 0; $i < $alumnosPorSeccion; $i++) {
+                    $nombreIdx = $alumnoIndex % count($nombres);
+                    $apellidoIdx = $alumnoIndex % count($apellidos);
+
+                    $nombre = $nombres[$nombreIdx];
+                    $ap = $apellidos[$apellidoIdx];
+                    $am = $apellidos[($alumnoIndex + 7) % count($apellidos)];
+
+                    $user = User::factory()->create([
+                        'name' => "$nombre $ap $am",
+                        'email' => 'alumno'.($alumnoIndex + 1).'@colegio.com',
+                        'role' => UserRole::Alumno,
+                        'password' => Hash::make('password'),
+                    ]);
+
+                    Alumno::create([
+                        'user_id' => $user->id,
+                        'nombres' => $nombre,
+                        'apellido_paterno' => $ap,
+                        'apellido_materno' => $am,
+                        'fecha_nacimiento' => fake()->dateTimeBetween("$anioNacimiento-03-01", "$anioFin-02-28"),
+                        'dni' => (string) ($dniBase + $alumnoIndex),
+                        'grado' => $grado,
+                        'seccion' => $seccion,
+                    ]);
+
+                    $alumnoIndex++;
+                }
+            }
         }
     }
 }

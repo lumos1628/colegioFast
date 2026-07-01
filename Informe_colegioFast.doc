@@ -1,0 +1,735 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="utf-8">
+<style>
+@page {
+    size: 8.5in 11in;
+    margin: 1in;
+}
+body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 12pt;
+    line-height: 2.0;
+    color: #000;
+}
+h1 {
+    font-size: 14pt;
+    font-weight: bold;
+    margin-top: 24pt;
+    margin-bottom: 12pt;
+    page-break-before: always;
+}
+h1:first-of-type {
+    page-break-before: avoid;
+}
+h2 {
+    font-size: 12pt;
+    font-weight: bold;
+    margin-top: 20pt;
+    margin-bottom: 10pt;
+}
+h3 {
+    font-size: 12pt;
+    font-weight: bold;
+    font-style: italic;
+    margin-top: 16pt;
+    margin-bottom: 8pt;
+}
+p {
+    text-indent: 0.5in;
+    margin-bottom: 6pt;
+    text-align: justify;
+}
+p.no-indent {
+    text-indent: 0;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12pt 0;
+    font-size: 11pt;
+}
+th {
+    background-color: #2C3E50;
+    color: white;
+    padding: 8px;
+    border: 1px solid #999;
+    text-align: center;
+}
+td {
+    padding: 6px 8px;
+    border: 1px solid #999;
+    vertical-align: top;
+}
+tr:nth-child(even) td {
+    background-color: #f2f2f2;
+}
+ul {
+    margin: 6pt 0 12pt 0.5in;
+}
+li {
+    margin-bottom: 4pt;
+}
+.center {
+    text-align: center;
+    text-indent: 0;
+}
+.screenshot-placeholder {
+    border: 3px dashed #FF0000;
+    padding: 40px;
+    text-align: center;
+    margin: 12pt 0;
+    background-color: #FFF5F5;
+    font-weight: bold;
+    color: #FF0000;
+    font-size: 14pt;
+}
+.figure-caption {
+    text-align: center;
+    font-style: italic;
+    font-size: 11pt;
+    color: #666;
+    margin-bottom: 16pt;
+    text-indent: 0;
+}
+.code-block {
+    font-family: 'Courier New', monospace;
+    font-size: 10pt;
+    background-color: #f5f5f5;
+    padding: 4px 8px;
+    margin: 2pt 0;
+    text-indent: 0;
+}
+.portada {
+    text-align: center;
+    page-break-after: always;
+}
+.portada h1 {
+    page-break-before: avoid;
+}
+.reference {
+    text-indent: 0;
+    margin-left: 0.5in;
+    text-indent: -0.5in;
+    margin-bottom: 6pt;
+}
+.toc-item {
+    text-indent: 0;
+    margin-bottom: 4pt;
+}
+.toc-chapter {
+    font-weight: bold;
+}
+.keyword {
+    font-style: italic;
+    margin-top: 16pt;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- CARATULA -->
+<!-- ============================================ -->
+<div class="portada">
+<br><br><br>
+<p class="center" style="font-size: 28pt; font-weight: bold; color: #1B4332;">TECSUP</p>
+<p class="center" style="font-size: 14pt; color: #333;">Instituto de Educacion Superior Tecnologico</p>
+<p class="center" style="font-size: 14pt; color: #333; margin-bottom: 24pt;">Sede Arequipa</p>
+<p class="center" style="font-size: 12pt; color: #555;">Carrera Profesional de</p>
+<p class="center" style="font-size: 16pt; font-weight: bold; color: #1B4332; margin-bottom: 40pt;">Diseno y Desarrollo de Software</p>
+<br>
+<p class="center" style="font-size: 18pt; font-weight: bold;">INFORME DEL PROYECTO</p>
+<p class="center" style="font-size: 24pt; font-weight: bold; color: #1B4332;">colegioFast</p>
+<p class="center" style="font-size: 14pt; font-style: italic; color: #555; margin-bottom: 40pt;">Sistema de Gestion Academica para Educacion Primaria</p>
+<br><br>
+<p class="center" style="font-size: 12pt; color: #333;">Tercer Ciclo</p>
+<p class="center" style="font-size: 12pt; color: #333;">Arequipa - Peru</p>
+<p class="center" style="font-size: 14pt; font-weight: bold; color: #1B4332;">2026</p>
+</div>
+
+<!-- ============================================ -->
+<!-- RESUMEN -->
+<!-- ============================================ -->
+<h1>Resumen</h1>
+
+<p>El presente informe describe el desarrollo del sistema colegioFast, una aplicacion web orientada a la gestion academica de instituciones educativas de nivel primaria en el Peru. El sistema fue disenado para resolver las deficiencias del manejo tradicional de informacion escolar, donde las calificaciones, la asistencia y el seguimiento del progreso de los estudiantes se gestionan mediante hojas de calculo o registros en papel, lo que genera perdida de informacion, falta de trazabilidad y escasa visibilidad para los padres de familia.</p>
+
+<p>colegioFast fue desarrollado utilizando el framework Laravel 13 sobre PHP 8.4, con PostgreSQL como motor de base de datos y Blade como motor de plantillas para la interfaz de usuario. El sistema implementa siete roles de usuario (administrador, director, secretaria, docente, alumno, padre y psicologo), cada uno con funcionalidades especificas adaptadas a sus necesidades. Entre las caracteristicas principales se encuentran: la evaluacion por competencias alineada al Curriculo Nacional de Educacion Basica (CNEB) del Ministerio de Educacion, el registro de asistencia con notificaciones automaticas a los padres, la auditoria de cambios en calificaciones mediante triggers de PostgreSQL, y la generacion de reportes academicos en formato Excel.</p>
+
+<p>El proyecto cuenta con 22 tablas en la base de datos, 19 modelos Eloquent, 23 controladores, 114 pruebas automatizadas con 279 aserciones, y una interfaz completamente responsiva construida con Tailwind CSS y Alpine.js. El sistema implementa un modelo de privacidad donde las calificaciones de control pedagogico interno pueden ocultarse a los alumnos pero permanecen visibles para los padres.</p>
+
+<p class="keyword">Palabras clave: Laravel, PostgreSQL, gestion academica, evaluacion por competencias, CNEB, educacion primaria, PHP.</p>
+
+<!-- ============================================ -->
+<!-- ABSTRACT -->
+<!-- ============================================ -->
+<h1>Abstract</h1>
+
+<p>This report describes the development of colegioFast, a web application designed for the academic management of primary education institutions in Peru. The system was designed to address the deficiencies of traditional school information management, where grades, attendance, and student progress tracking are handled through spreadsheets or paper records, resulting in information loss, lack of traceability, and limited visibility for parents.</p>
+
+<p>colegioFast was developed using the Laravel 13 framework on PHP 8.4, with PostgreSQL as the database engine and Blade as the template engine for the user interface. The system implements seven user roles (administrator, director, secretary, teacher, student, parent, and psychologist), each with specific functionalities adapted to their needs. Key features include: competency-based evaluation aligned with the National Basic Education Curriculum (CNEB) of the Ministry of Education, attendance registration with automatic parent notifications, grade change auditing via PostgreSQL triggers, and academic report generation in Excel format.</p>
+
+<p>The project features 22 database tables, 19 Eloquent models, 23 controllers, 114 automated tests with 279 assertions, and a fully responsive interface built with Tailwind CSS and Alpine.js. The system implements a privacy model where internal pedagogical control grades can be hidden from students but remain visible to parents.</p>
+
+<p class="keyword">Keywords: Laravel, PostgreSQL, academic management, competency-based evaluation, CNEB, primary education, PHP.</p>
+
+<!-- ============================================ -->
+<!-- INDICE -->
+<!-- ============================================ -->
+<h1>Indice de Contenidos</h1>
+
+<p class="toc-item toc-chapter">Resumen</p>
+<p class="toc-item toc-chapter">Abstract</p>
+<p class="toc-item toc-chapter">Capitulo 1: Introduccion</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;1.1 Planteamiento del Problema</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;1.2 Objetivos</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;1.3 Alcance del Proyecto</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;1.4 Justificacion</p>
+<p class="toc-item toc-chapter">Capitulo 2: Marco Teorico</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;2.1 Antecedentes</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;2.2 Tecnologias Utilizadas</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;2.3 Conceptos Clave</p>
+<p class="toc-item toc-chapter">Capitulo 3: Metodologia</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;3.1 Enfoque de Desarrollo</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;3.2 Arquitectura del Sistema</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;3.3 Stack Tecnologico</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;3.4 Herramientas de Desarrollo</p>
+<p class="toc-item toc-chapter">Capitulo 4: Diseno del Sistema</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;4.1 Modelo de Base de Datos</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;4.2 Casos de Uso</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;4.3 Capturas de Pantalla</p>
+<p class="toc-item toc-chapter">Capitulo 5: Resultados y Conclusiones</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;5.1 Funcionalidades Implementadas</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;5.2 Pruebas Realizadas</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;5.3 Conclusiones</p>
+<p class="toc-item">&nbsp;&nbsp;&nbsp;&nbsp;5.4 Recomendaciones</p>
+<p class="toc-item toc-chapter">Referencias Bibliograficas</p>
+<p class="toc-item toc-chapter">Anexos</p>
+
+<!-- ============================================ -->
+<!-- CAPITULO 1: INTRODUCCION -->
+<!-- ============================================ -->
+<h1>Capitulo 1: Introduccion</h1>
+
+<h2>1.1 Planteamiento del Problema</h2>
+
+<p>En el contexto educativo peruano, las instituciones de nivel primaria enfrentan desafios significativos en la gestion de la informacion academica. Actualmente, muchos centros educativos dependen de metodos tradicionales como hojas de calculo en Excel, cuadernos fisicos o sistemas fragmentados para registrar calificaciones, controlar la asistencia y dar seguimiento al progreso de los estudiantes.</p>
+
+<p>Esta situacion genera multiples problemas: la falta de trazabilidad en el registro de calificaciones dificulta identificar el progreso real del estudiante a lo largo del tiempo; la ausencia de notificaciones oportunas impide que los padres de familia participen activamente en el proceso educativo de sus hijos; y la dispersion de la informacion en multiples formatos complica la generacion de reportes academicos y la toma de decisiones pedagogicas.</p>
+
+<p>Adicionalmente, el Curriculo Nacional de Educacion Basica (CNEB) del Ministerio de Educacion del Peru establece un modelo de evaluacion por competencias que requiere un seguimiento detallado de capacidades especificas dentro de cada area curricular. Este modelo de evaluacion, que utiliza escalas como AD (Logro Destacado), A (Logro Esperado), B (En Proceso) y C (En Inicio), demanda herramientas tecnologicas que permitan registrar y visualizar el desempeno de los estudiantes de manera estructurada.</p>
+
+<p>El proyecto colegioFast surge como respuesta a estas necesidades, proponiendo una solucion tecnologica integral que centralice la gestion academica, facilite el trabajo del docente y proporcione visibilidad en tiempo real del progreso estudiantil a los padres de familia.</p>
+
+<h2>1.2 Objetivos</h2>
+
+<h3>1.2.1 Objetivo General</h3>
+
+<p>Desarrollar un sistema web de gestion academica para instituciones educativas de nivel primaria en el Peru, que permita centralizar el registro de calificaciones, asistencia e incidencias, alineado al modelo de evaluacion por competencias del Curriculo Nacional de Educacion Basica (CNEB), proporcionando visibilidad en tiempo real a todos los actores del proceso educativo.</p>
+
+<h3>1.2.2 Objetivos Especificos</h3>
+
+<ul>
+<li>Implementar un sistema de evaluacion por competencias que permita registrar calificaciones segun la escala CNEB (AD, A, B, C) vinculadas a competencias y capacidades del area curricular.</li>
+<li>Desarrollar un modulo de control de asistencia con notificaciones automaticas a los padres de familia cuando se registren inasistencias o tardanzas.</li>
+<li>Crear un sistema de roles y permisos que diferencie las funcionalidades disponibles para administradores, directores, docentes, alumnos, padres y psicologos.</li>
+<li>Implementar mecanismos de privacidad que permitan al docente controlar la visibilidad de las calificaciones de control pedagogico interno.</li>
+<li>Desarrollar un sistema de auditoria que registre automaticamente todos los cambios realizados en las calificaciones de los estudiantes.</li>
+<li>Implementar la generacion de reportes academicos en formato Excel, tanto individuales como grupales.</li>
+<li>Crear interfaces responsivas y accesibles que faciliten el uso del sistema por parte de todos los actores, priorizando la experiencia del docente.</li>
+</ul>
+
+<h2>1.3 Alcance del Proyecto</h2>
+
+<p>El sistema colegioFast abarca la gestion integral de una institucion educativa de nivel primaria, cubriendo los siguientes ambitos funcionales:</p>
+
+<ul>
+<li><strong>Gestion de usuarios y roles:</strong> administracion de cuentas para siete tipos de usuarios con permisos diferenciados.</li>
+<li><strong>Gestion academica:</strong> registro de periodos academicos, cursos, asignaciones docente-curso y matriculas de estudiantes.</li>
+<li><strong>Evaluacion por competencias:</strong> creacion de actividades vinculadas a competencias CNEB, registro de calificaciones en lote y calculo automatico de promedios bimestrales.</li>
+<li><strong>Control de asistencia:</strong> registro diario de asistencia con estados de presente, tardanza, ausente y justificado.</li>
+<li><strong>Seguimiento conductual:</strong> registro de incidencias de conducta (faltas leves, faltas graves y meritos).</li>
+<li><strong>Comunicacion con padres:</strong> sistema de notificaciones automaticas y consulta de estado financiero.</li>
+<li><strong>Reportes academicos:</strong> exportacion de libretas individuales y reportes grupales en formato Excel.</li>
+<li><strong>Bitacora psicologica:</strong> registro privado de observaciones psicologicas por parte del profesional del centro educativo.</li>
+</ul>
+
+<p>El sistema esta disenado para operar en un entorno web, accesible desde cualquier navegador moderno, y utiliza PostgreSQL como motor de base de datos para garantizar integridad referencial y funcionalidades avanzadas como triggers y vistas materializadas.</p>
+
+<h2>1.4 Justificacion</h2>
+
+<p>El desarrollo de colegioFast se justifica por la necesidad imperante de modernizar la gestion academica en las instituciones educativas de nivel primaria en el Peru. La implementacion de un sistema centralizado ofrece beneficios significativos para cada uno de los actores involucrados:</p>
+
+<p>Para los docentes, el sistema reduce significativamente el tiempo dedicado a tareas administrativas como el registro manual de calificaciones y asistencia, permitiendo enfocar sus esfuerzos en la planificacion pedagogica y la atencion personalizada a los estudiantes. La interfaz intuitiva y los flujos de trabajo optimizados facilitan el registro en lote de calificaciones y asistencia.</p>
+
+<p>Para los padres de familia, el sistema proporciona visibilidad en tiempo real del progreso academico de sus hijos, incluyendo calificaciones, asistencia e incidencias de conducta. Las notificaciones automaticas permiten una participacion mas activa y oportuna en el proceso educativo.</p>
+
+<p>Para la institucion educativa, el sistema centraliza toda la informacion academica en una unica plataforma, facilitando la generacion de reportes, la auditoria de cambios y la toma de decisiones basada en datos. La alineacion con el CNEB garantiza el cumplimiento de los requisitos del Ministerio de Educacion.</p>
+
+<p>Desde el punto de vista tecnico, el proyecto demuestra la aplicacion de tecnologias modernas de desarrollo web (Laravel, PostgreSQL, Tailwind CSS) en la resolucion de problemas del ambito educativo, integrando conceptos como evaluacion por competencias, privacidad de datos y auditoria de informacion.</p>
+
+<!-- ============================================ -->
+<!-- CAPITULO 2: MARCO TEORICO -->
+<!-- ============================================ -->
+<h1>Capitulo 2: Marco Teorico</h1>
+
+<h2>2.1 Antecedentes</h2>
+
+<p>La gestion academica escolar ha evolucionado significativamente en las ultimas decadas, pasando de registros manuales en libros fisicos a sistemas digitales cada vez mas sofisticados. En el contexto peruano, el Ministerio de Educacion ha impulsado la transformacion digital a traves del Curriculo Nacional de Educacion Basica (CNEB), que establece un enfoque de evaluacion por competencias diferente al tradicional sistema numerico.</p>
+
+<p>El CNEB define la evaluacion como un proceso permanente de recojo y analisis de evidencias sobre el progreso de aprendizaje de los estudiantes. La escala de calificacion literal (AD, A, B, C) reemplaza al sistema numerico vigesimal, buscando una descripcion mas cualitativa del nivel de logro alcanzado. Este enfoque requiere herramientas que permitan vincular cada actividad evaluativa con competencias y capacidades especificas del curriculo.</p>
+
+<p>En el ambito del desarrollo de software educativo, existen diversas soluciones comerciales y de codigo abierto. Sin embargo, muchas de estas herramientas presentan limitaciones: interfaces complejas que no se adaptan al flujo de trabajo del docente peruano, falta de alineacion con el CNEB, o dependencia de tecnologias que requieren infraestructura costosa. colegioFast aborda estas limitaciones mediante un diseno centrado en el usuario docente, alineacion total con el CNEB y uso de tecnologias de codigo abierto accesibles.</p>
+
+<h2>2.2 Tecnologias Utilizadas</h2>
+
+<h3>2.2.1 PHP 8.4</h3>
+
+<p>PHP es el lenguaje de programacion del lado del servidor utilizado para el desarrollo del backend de colegioFast. La version 8.4 incorpora caracteristicas modernas como tipado estricto, propiedades de solo lectura, enumeraciones y constructores con promocion de parametros, que permiten escribir codigo mas seguro y mantenible. PHP fue elegido por su amplia adopcion en el ecosistema web, su compatibilidad con los servidores de hosting disponibles en Peru y su curva de aprendizaje accesible para estudiantes de desarrollo de software.</p>
+
+<h3>2.2.2 Laravel 13</h3>
+
+<p>Laravel es el framework de aplicacion web de codigo abierto mas popular para PHP, basado en el patron de diseno Modelo-Vista-Controlador (MVC). La version 13 proporciona herramientas integradas para la gestion de bases de datos mediante Eloquent ORM, enrutamiento elegante, sistema de plantillas Blade, autenticacion mediante Laravel Breeze, colas de trabajos para tareas asincronas y herramientas de prueba con Pest. Laravel fue seleccionado por su filosofia de "developer experience", su extensa documentacion y su ecosistema de paquetes que aceleran el desarrollo.</p>
+
+<h3>2.2.3 PostgreSQL</h3>
+
+<p>PostgreSQL es el sistema de gestion de bases de datos relacional de codigo abierto utilizado como almacenamiento principal de colegioFast. Fue seleccionado sobre MySQL por sus funcionalidades avanzadas necesarias para el proyecto: triggers para auditoria automatica de cambios en calificaciones, vistas calculadas para promedios bimestrales que se recalculan en cada consulta sin necesidad de mantenimiento, y soporte robusto para constraints UNIQUE que garantizan la integridad de los datos. PostgreSQL tambien ofrece mejor cumplimiento de estandares SQL y manejo mas estricto de tipos de datos.</p>
+
+<h3>2.2.4 Blade</h3>
+
+<p>Blade es el motor de plantillas incluido en Laravel que permite generar vistas HTML de forma dinamica. A diferencia de enfoques basados en JavaScript (como React o Vue), Blade renderiza el HTML completo en el servidor, lo que resulta en paginas que funcionan sin JavaScript obligatorio y son mas accesibles. El proyecto utiliza el principio de "cada tarjeta es una pagina", donde cada elemento de la interfaz corresponde a una ruta real de Blade, no a paneles manejados con estado en el cliente.</p>
+
+<h3>2.2.5 Tailwind CSS</h3>
+
+<p>Tailwind CSS es un framework de CSS utilitario que permite construir interfaces de usuario personalizadas directamente en el HTML mediante clases predefinidas. En colegioFast, Tailwind CSS se utiliza para crear una interfaz responsiva y profesional con un sistema de diseno consistente, incluyendo componentes reutilizables como tarjetas, botones, insignias y alertas. El uso de clases utilitarias elimina la necesidad de escribir CSS personalizado y facilita el mantenimiento.</p>
+
+<h3>2.2.6 Alpine.js</h3>
+
+<p>Alpine.js es un framework de JavaScript minimo que proporciona interactividad reactiva directamente en el HTML, similar a Vue.js pero con una huella mucho menor. En colegioFast, Alpine.js se utiliza exclusivamente para interacciones puntuales que requieren respuesta instantanea, como el filtro de busqueda de alumnos al tipear o el cambio visual de switches de asistencia. El guardado real de datos siempre se realiza mediante peticiones HTTP tradicionales, no mediante llamadas AJAX individuales por cada cambio.</p>
+
+<h3>2.2.7 OpenSpout</h3>
+
+<p>OpenSpout es una biblioteca PHP de codigo abierto para lectura y escritura de archivos Excel (XLSX) y CSV. En colegioFast se utiliza para generar reportes academicos en formato Excel, incluyendo la libreta individual de calificaciones y el reporte grupal de un curso completo con promedios por competencia.</p>
+
+<h2>2.3 Conceptos Clave</h2>
+
+<h3>2.3.1 Evaluacion por Competencias (CNEB)</h3>
+
+<p>El Curriculo Nacional de Educacion Basica (CNEB) del Peru establece un modelo de evaluacion formativa centrada en competencias. Una competencia es la facultad de combinar un conjunto de capacidades a fin de lograr un proposito especifico en una situacion determinada, actuando de forma pertinente y con sentido etico.</p>
+
+<p>Las capacidades son los recursos (conocimientos, habilidades y actitudes) que se articulan para actuar de manera competente. En colegioFast, cada actividad evaluativa se vincula obligatoriamente a una competencia y una capacidad especifica, permitiendo un seguimiento detallado del progreso del estudiante en cada aspecto del curriculo.</p>
+
+<p>La escala de calificacion del CNEB utiliza cuatro niveles:</p>
+
+<table>
+<tr><th>Nivel</th><th>Significado</th><th>Descripcion</th></tr>
+<tr><td>AD</td><td>Logro Destacado</td><td>El estudiante evidencia un nivel superior a lo esperado en la competencia</td></tr>
+<tr><td>A</td><td>Logro Esperado</td><td>El estudiante evidencia el nivel esperado de la competencia</td></tr>
+<tr><td>B</td><td>En Proceso</td><td>El estudiante esta proximo o cerca de lograr el nivel esperado</td></tr>
+<tr><td>C</td><td>En Inicio</td><td>El estudiante muestra dificultades o no logra el nivel esperado</td></tr>
+</table>
+
+<h3>2.3.2 Arquitectura MVC</h3>
+
+<p>El patron Modelo-Vista-Controlador (MVC) separa la aplicacion en tres componentes interconectados: el Modelo representa los datos y la logica de negocio, la Vista presenta la informacion al usuario, y el Controlador procesa las peticiones del usuario y coordina la interaccion entre modelo y vista. Laravel implementa este patron de forma natural, donde los modelos Eloquent representan las tablas de la base de datos, las plantillas Blade generan las vistas HTML, y los controladores manejan la logica de las rutas.</p>
+
+<h3>2.3.3 Eloquent ORM</h3>
+
+<p>Eloquent es el ORM (Object-Relational Mapping) incluido en Laravel que permite interactuar con la base de datos utilizando objetos PHP en lugar de consultas SQL directas. Cada modelo Eloquent corresponde a una tabla de la base de datos y proporciona metodos para realizar operaciones CRUD, definir relaciones entre tablas y ejecutar consultas complejas de forma expresiva. En colegioFast se utilizan 19 modelos Eloquent que representan las 22 tablas del sistema.</p>
+
+<h3>2.3.4 Roles y Permisos</h3>
+
+<p>El sistema implementa siete roles de usuario, cada uno con funcionalidades especificas:</p>
+
+<table>
+<tr><th>Rol</th><th>Descripcion</th><th>Funcionalidades principales</th></tr>
+<tr><td>admin</td><td>Administrador del sistema</td><td>Gestion completa de todos los recursos del sistema</td></tr>
+<tr><td>director</td><td>Director del centro educativo</td><td>Dashboard de supervision con estadisticas globales</td></tr>
+<tr><td>secretaria</td><td>Secretaria academica</td><td>Dashboard operativo con matriculas y pagos</td></tr>
+<tr><td>docente</td><td>Profesor de aula</td><td>Gestion de cursos, calificaciones, asistencia e incidencias</td></tr>
+<tr><td>alumno</td><td>Estudiante</td><td>Consulta de calificaciones visibles y progreso bimestral</td></tr>
+<tr><td>padre</td><td>Padre o tutor</td><td>Monitoreo del progreso de hijos, notificaciones y pagos</td></tr>
+<tr><td>psicologo</td><td>Psicologo educativo</td><td>Bitacora psicologica privada de estudiantes</td></tr>
+</table>
+
+<!-- ============================================ -->
+<!-- CAPITULO 3: METODOLOGIA -->
+<!-- ============================================ -->
+<h1>Capitulo 3: Metodologia</h1>
+
+<h2>3.1 Enfoque de Desarrollo</h2>
+
+<p>El desarrollo de colegioFast se realizo siguiendo un enfoque iterativo e incremental, priorizando la entrega de funcionalidades de mayor valor para el usuario final (el docente). Se trabajo por capas de abstraccion y por roles de usuario, comenzando por el ecosistema docente como prioridad principal de la experiencia de usuario.</p>
+
+<p>El proceso de desarrollo siguio el siguiente orden:</p>
+
+<ul>
+<li>Definicion del modelo de datos: diseno de las 22 tablas, relaciones y constraints de integridad.</li>
+<li>Implementacion de migraciones y seeders: creacion de la estructura de base de datos y datos de prueba.</li>
+<li>Creacion de modelos Eloquent: definicion de relaciones, atributos rellenables y conversiones de tipos.</li>
+<li>Desarrollo de rutas y controladores: implementacion de la logica de negocio organizada por rol.</li>
+<li>Construccion de vistas Blade: interfaces de usuario con Tailwind CSS y componentes reutilizables.</li>
+<li>Implementacion de funcionalidades avanzadas: triggers de auditoria, vistas calculadas, notificaciones automaticas y reportes Excel.</li>
+<li>Pruebas automatizadas: creacion de 114 tests con Pest para verificar los flujos criticos del sistema.</li>
+</ul>
+
+<h2>3.2 Arquitectura del Sistema</h2>
+
+<p>colegioFast sigue una arquitectura cliente-servidor basada en el patron MVC de Laravel. El servidor procesa las peticiones HTTP, ejecuta la logica de negocio en los controladores, consulta o modifica datos en la base de datos PostgreSQL a traves de los modelos Eloquent, y devuelve paginas HTML renderizadas por el motor de plantillas Blade.</p>
+
+<p>Las decisiones arquitectonicas mas relevantes incluyen:</p>
+
+<ul>
+<li><strong>Tabla central de asignaciones:</strong> la tabla <em>asignaciones</em> es el nucleo del modelo de datos, relacionando docente, curso y periodo academico. Todos los demas registros (matriculas, actividades, notas, asistencias) cuelgan de una asignacion especifica, no directamente de cursos o docentes.</li>
+<li><strong>Vista calculada para promedios:</strong> la vista <em>notas_bimestrales</em> de PostgreSQL calcula promedios por competencia en cada consulta, eliminando la necesidad de mantener datos duplicados.</li>
+<li><strong>Privacidad por diseno:</strong> el campo <em>visible_para_alumno</em> en la tabla <em>notas</em> permite al docente controlar que calificaciones son visibles para el alumno, implementando privacidad granular sin logica adicional.</li>
+<li><strong>Auditoria automatica:</strong> el trigger <em>trg_auditoria_notas</em> de PostgreSQL registra automaticamente todos los cambios en calificaciones, garantizando trazabilidad sin intervencion del codigo PHP.</li>
+<li><strong>Notificaciones asincronas:</strong> el sistema utiliza colas de trabajos (jobs) de Laravel para procesar notificaciones en segundo plano, evitando bloquear la interfaz del usuario.</li>
+</ul>
+
+<h2>3.3 Stack Tecnologico</h2>
+
+<table>
+<tr><th>Componente</th><th>Tecnologia</th><th>Version</th><th>Proposito</th></tr>
+<tr><td>Lenguaje</td><td>PHP</td><td>8.4</td><td>Runtime del servidor</td></tr>
+<tr><td>Framework</td><td>Laravel</td><td>13</td><td>Framework MVC para aplicaciones web</td></tr>
+<tr><td>Base de datos</td><td>PostgreSQL</td><td>-</td><td>Almacenamiento relacional con triggers y vistas</td></tr>
+<tr><td>Motor de plantillas</td><td>Blade</td><td>-</td><td>Generacion de vistas HTML en el servidor</td></tr>
+<tr><td>CSS Framework</td><td>Tailwind CSS</td><td>3</td><td>Estilos utilitarios para interfaces responsivas</td></tr>
+<tr><td>JavaScript</td><td>Alpine.js</td><td>3</td><td>Interactividad minima sin framework pesado</td></tr>
+<tr><td>Bundler</td><td>Vite</td><td>8</td><td>Compilacion y optimizacion de assets</td></tr>
+<tr><td>Autenticacion</td><td>Laravel Breeze</td><td>2</td><td>Scaffolding de autenticacion con bcrypt</td></tr>
+<tr><td>Exportacion Excel</td><td>OpenSpout</td><td>5.7</td><td>Generacion de reportes en formato XLSX</td></tr>
+<tr><td>Testing</td><td>Pest</td><td>4</td><td>Framework de pruebas con sintaxis expresiva</td></tr>
+<tr><td>Formateo de codigo</td><td>Laravel Pint</td><td>1</td><td>Formateo automatico de codigo PHP</td></tr>
+</table>
+
+<h2>3.4 Herramientas de Desarrollo</h2>
+
+<p>Para el desarrollo del proyecto se utilizaron las siguientes herramientas:</p>
+
+<ul>
+<li><strong>Editor de codigo:</strong> entorno de desarrollo integrado con soporte para PHP y Laravel.</li>
+<li><strong>Control de versiones:</strong> Git para el manejo del codigo fuente y seguimiento de cambios.</li>
+<li><strong>Terminal:</strong> interfaz de linea de comandos para ejecutar artisan, composer y comandos del sistema.</li>
+<li><strong>Navegador web:</strong> para pruebas y depuracion de la interfaz de usuario.</li>
+<li><strong>PostgreSQL:</strong> motor de base de datos con herramientas de administracion para consultas y verificacion de triggers.</li>
+<li><strong>Pest:</strong> framework de pruebas que permite escribir tests con sintaxis legible y expresiva.</li>
+</ul>
+
+<!-- ============================================ -->
+<!-- CAPITULO 4: DISENO DEL SISTEMA -->
+<!-- ============================================ -->
+<h1>Capitulo 4: Diseno del Sistema</h1>
+
+<h2>4.1 Modelo de Base de Datos</h2>
+
+<p>El sistema colegioFast utiliza una base de datos PostgreSQL con 22 tablas interrelacionadas. El diseno sigue el principio de la tabla central <em>asignaciones</em>, donde todo registro academico (matriculas, actividades, notas, asistencias) se vincula a una asignacion especifica que combina docente, curso y periodo academico.</p>
+
+<h3>4.1.1 Tablas Principales</h3>
+
+<table>
+<tr><th>Tabla</th><th>Proposito</th><th>Campos clave</th></tr>
+<tr><td>users</td><td>Autenticacion base de usuarios</td><td>id, name, email, role, password</td></tr>
+<tr><td>alumnos</td><td>Datos del estudiante</td><td>user_id, nombres, apellidos, dni, grado, seccion</td></tr>
+<tr><td>docentes</td><td>Datos del profesor</td><td>user_id, especialidad, telefono</td></tr>
+<tr><td>padres</td><td>Datos del padre o tutor</td><td>user_id, nombres, apellidos, dni, telefono</td></tr>
+<tr><td>alumno_padre</td><td>Relacion N-N estudiante-tutor</td><td>alumno_id, padre_id, parentesco</td></tr>
+<tr><td>periodo_academicos</td><td>Periodos o bimestres</td><td>nombre, fecha_inicio, fecha_fin, anio_escolar, activo</td></tr>
+<tr><td>cursos</td><td>Materias del curriculo</td><td>nombre, area_curricular, grado, seccion</td></tr>
+<tr><td>asignaciones</td><td>Tabla central: docente + curso + periodo</td><td>docente_id, curso_id, periodo_academico_id, dia_semana, hora_inicio, hora_fin</td></tr>
+<tr><td>matriculas</td><td>Inscripcion de alumno en asignacion</td><td>alumno_id, asignacion_id, fecha_matricula, estado</td></tr>
+<tr><td>competencias</td><td>Competencias del CNEB</td><td>nombre, area_curricular</td></tr>
+<tr><td>capacidades</td><td>Capacidades hijas de competencia</td><td>competencia_id, nombre</td></tr>
+<tr><td>actividades</td><td>Actividades evaluativas del curso</td><td>asignacion_id, titulo, descripcion, fecha, competencia_id, capacidad_id</td></tr>
+<tr><td>notas</td><td>Calificacion por actividad</td><td>actividad_id, alumno_id, calificacion, observacion, visible_para_alumno</td></tr>
+<tr><td>notas_bimestrales</td><td>VIEW: promedios por competencia</td><td>alumno_id, asignacion_id, competencia_id, promedio_numerico</td></tr>
+<tr><td>asistencias</td><td>Registro diario de asistencia</td><td>alumno_id, asignacion_id, fecha, estado, observacion</td></tr>
+<tr><td>incidencias_conducta</td><td>Faltas y meritos</td><td>alumno_id, docente_id, tipo, descripcion, fecha</td></tr>
+<tr><td>bitacora_psicologica</td><td>Registro psicologico privado</td><td>alumno_id, psicologo_id, fecha, observaciones</td></tr>
+<tr><td>pagos</td><td>Pagos de pensiones</td><td>alumno_id, periodo_academico_id, concepto, monto, fecha_vencimiento, estado</td></tr>
+<tr><td>auditoria_notas</td><td>Historial de cambios de notas</td><td>nota_id, calificacion_anterior, calificacion_nueva, fecha_modificacion</td></tr>
+<tr><td>notificaciones</td><td>Alertas para padres</td><td>user_id, tipo, mensaje, leido</td></tr>
+</table>
+
+<h3>4.1.2 Enums del Sistema</h3>
+
+<p>El sistema utiliza ocho tipos enumerados para restringir los valores permitidos en campos especificos:</p>
+
+<table>
+<tr><th>Enum</th><th>Valores</th><th>Uso</th></tr>
+<tr><td>UserRole</td><td>admin, director, secretaria, docente, alumno, padre, psicologo</td><td>Rol del usuario en el sistema</td></tr>
+<tr><td>Calificacion</td><td>AD, A, B, C</td><td>Escala de evaluacion CNEB</td></tr>
+<tr><td>AsistenciaEstado</td><td>presente, tardanza, ausente, justificado</td><td>Estado de asistencia diaria</td></tr>
+<tr><td>IncidenciaTipo</td><td>falta_leve, falta_grave, merito</td><td>Tipo de incidencia de conducta</td></tr>
+<tr><td>PagoEstado</td><td>pagado, pendiente, vencido</td><td>Estado de pago de pension</td></tr>
+<tr><td>NotificacionTipo</td><td>inasistencia, nota_critica, incidencia_conducta, tarea_pendiente</td><td>Tipo de notificacion automatica</td></tr>
+<tr><td>Grado</td><td>primero, segundo, tercero, cuarto, quinto, sexto</td><td>Grado de estudio (1-6 primaria)</td></tr>
+<tr><td>Seccion</td><td>A, B, C</td><td>Seccion dentro de cada grado</td></tr>
+</table>
+
+<h3>4.1.3 Triggers y Vistas</h3>
+
+<p>El trigger <em>trg_auditoria_notas</em> se ejecuta automaticamente despues de cada operacion UPDATE sobre la columna <em>calificacion</em> de la tabla <em>notas</em>. Este trigger inserta un registro en la tabla <em>auditoria_notas</em> con la calificacion anterior, la nueva calificacion y la fecha de modificacion, garantizando trazabilidad completa de los cambios sin intervencion del codigo de aplicacion.</p>
+
+<p>La vista <em>notas_bimestrales</em> calcula el promedio numerico por alumno, asignacion y competencia, mapeando las calificaciones literales a valores numericos (AD=4, A=3, B=2, C=1). Al ser una vista y no una tabla fisica, los promedios se recalculan automaticamente en cada consulta, eliminando la posibilidad de datos desactualizados.</p>
+
+<h2>4.2 Casos de Uso</h2>
+
+<p>El sistema implementa 17 casos de uso que cubren todas las funcionalidades requeridas. A continuacion se describe cada caso de uso con sus actores, flujo principal y tablas involucradas.</p>
+
+<table>
+<tr><th>Codigo</th><th>Caso de Uso</th><th>Actor</th><th>Descripcion</th><th>Tablas</th></tr>
+<tr><td>CUS-01</td><td>Iniciar sesion</td><td>Todos</td><td>Login con credenciales email y password. Verificacion con bcrypt. Redireccion segun rol.</td><td>users</td></tr>
+<tr><td>CUS-02</td><td>Cerrar sesion</td><td>Todos</td><td>Invalidacion de sesion activa y redireccion al login.</td><td>sessions</td></tr>
+<tr><td>CUS-03</td><td>Buscar alumnos</td><td>Docente</td><td>Busqueda en tiempo real por nombre o apellido al tipear.</td><td>matriculas, alumnos</td></tr>
+<tr><td>CUS-04</td><td>Registrar asistencia</td><td>Docente</td><td>Registro en lote con estados presente/tardanza/ausente/justificado. Notificacion automatica.</td><td>asistencias, notificaciones</td></tr>
+<tr><td>CUS-05</td><td>Gestionar actividades</td><td>Docente</td><td>CRUD de actividades vinculadas a competencia y capacidad CNEB.</td><td>actividades, competencias, capacidades</td></tr>
+<tr><td>CUS-06</td><td>Registrar calificaciones</td><td>Docente</td><td>Registro en lote con escala CNEB. Control de visibilidad. Notificacion si es C.</td><td>notas, notificaciones</td></tr>
+<tr><td>CUS-07</td><td>Registrar incidencias</td><td>Docente</td><td>Registro de faltas leves, graves y meritos. Notificacion automatica.</td><td>incidencias_conducta, notificaciones</td></tr>
+<tr><td>CUS-08</td><td>Actividades pendientes</td><td>Docente</td><td>Vista de actividades con calificacion incompleta o futuras.</td><td>actividades, notas</td></tr>
+<tr><td>CUS-09</td><td>Progreso bimestral</td><td>Docente, Alumno</td><td>Promedios bimestrales por competencia con indicador visual.</td><td>notas_bimestrales</td></tr>
+<tr><td>CUS-10</td><td>Notificaciones padre</td><td>Padre</td><td>Lista de notificaciones con filtro y accion marcar como leida.</td><td>notificaciones</td></tr>
+<tr><td>CUS-11</td><td>Privacidad de notas</td><td>Sistema</td><td>Alumno solo ve notas visibles. Padre ve todas.</td><td>notas</td></tr>
+<tr><td>CUS-12</td><td>Estado financiero</td><td>Padre</td><td>Pagos agrupados por hijo con totales pagado/pendiente.</td><td>pagos</td></tr>
+<tr><td>CUS-13</td><td>Notificaciones automaticas</td><td>Sistema</td><td>Dispatch de jobs al registrar asistencia, notas C o incidencias.</td><td>notificaciones, jobs</td></tr>
+<tr><td>CUS-14</td><td>Gestionar matriculas</td><td>Admin</td><td>CRUD de alumnos, padres y relacion N-N. Matricula masiva.</td><td>alumnos, padres, alumno_padre, matriculas</td></tr>
+<tr><td>CUS-15</td><td>Gestionar periodos</td><td>Admin</td><td>CRUD de periodos, cursos y asignaciones.</td><td>periodo_academicos, cursos, asignaciones</td></tr>
+<tr><td>CUS-16</td><td>Reportes academicos</td><td>Docente, Admin</td><td>Exportacion Excel de libreta individual y reporte grupal.</td><td>notas, competencias</td></tr>
+<tr><td>CUS-17</td><td>Bitacora psicologica</td><td>Psicologo</td><td>CRUD privado de bitacora psicologica.</td><td>bitacora_psicologica</td></tr>
+</table>
+
+<h2>4.3 Capturas de Pantalla</h2>
+
+<p>A continuacion se presentan los espacios reservados para las capturas de pantalla del sistema en funcionamiento. Cada captura corresponde a un caso de uso especifico y debe ser insertada manualmente.</p>
+
+<h3>CUS-01: Iniciar sesion</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 1. Pantalla de login del sistema con panel visual izquierdo y formulario de autenticacion.</p>
+
+<h3>CUS-02: Cerrar sesion</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 2. Boton de cerrar sesion visible en el dashboard y sidebar.</p>
+
+<h3>CUS-03: Buscar alumnos</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 3. Vista de detalle de curso con campo de busqueda dinamica de alumnos.</p>
+
+<h3>CUS-04: Registrar asistencia</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 4. Vista de registro de asistencia diaria con switches por estado.</p>
+
+<h3>CUS-05: Gestionar actividades</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 5. Lista de actividades del curso con opciones de crear, editar y eliminar.</p>
+
+<h3>CUS-06: Registrar calificaciones</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 6. Formulario de registro de calificaciones en lote con escala CNEB.</p>
+
+<h3>CUS-07: Registrar incidencias</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 7. Formulario de registro de incidencia de conducta (falta leve, grave o merito).</p>
+
+<h3>CUS-08: Actividades pendientes</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 8. Vista de actividades pendientes con barra de progreso por actividad.</p>
+
+<h3>CUS-09: Progreso bimestral</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 9. Vista de progreso bimestral por competencia con indicadores de nivel.</p>
+
+<h3>CUS-10: Notificaciones del padre</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 10. Lista de notificaciones del padre con filtro de leidas/no leidas.</p>
+
+<h3>CUS-11: Privacidad de notas</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 11. Comparacion de vista de alumno (solo notas visibles) vs vista de padre (todas las notas).</p>
+
+<h3>CUS-12: Estado financiero</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 12. Vista de estado financiero del padre con pagos agrupados por hijo.</p>
+
+<h3>CUS-13: Notificacion automatica</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 13. Ejemplo de notificacion generada automaticamente por inasistencia.</p>
+
+<h3>CUS-14: Gestion de matriculas</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 14. Panel administrativo de gestion de matriculas y alumnos.</p>
+
+<h3>CUS-15: Gestion de periodos</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 15. Panel administrativo de gestion de periodos academicos y cursos.</p>
+
+<h3>CUS-16: Reporte Excel</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 16. Ejemplo de reporte Excel generado (libreta individual o reporte grupal).</p>
+
+<h3>CUS-17: Bitacora psicologica</h3>
+<div class="screenshot-placeholder">[INSERTAR CAPTURA DE PANTALLA AQUI]</div>
+<p class="figure-caption">Figura 17. Vista de bitacora psicologica con lista de alumnos atendidos.</p>
+
+<!-- ============================================ -->
+<!-- CAPITULO 5: RESULTADOS Y CONCLUSIONES -->
+<!-- ============================================ -->
+<h1>Capitulo 5: Resultados y Conclusiones</h1>
+
+<h2>5.1 Funcionalidades Implementadas</h2>
+
+<p>El sistema colegioFast ha sido desarrollado en su totalidad, implementando todas las funcionalidades planificadas:</p>
+
+<ul>
+<li>Sistema de autenticacion completo con siete roles de usuario y encriptacion bcrypt.</li>
+<li>Ecosistema docente: dashboard con cursos del dia, horario semanal, detalle de curso con busqueda dinamica, ficha de alumno con notas/asistencias/incidencias, CRUD de actividades por competencias, registro de calificaciones en lote, registro de asistencia diaria, vista de actividades pendientes y progreso bimestral por competencia.</li>
+<li>Ecosistema alumno: dashboard con cursos matriculados, vista de detalle de curso con actividades y calificaciones visibles, progreso bimestral por competencia.</li>
+<li>Ecosistema padre: dashboard con progreso de todos los hijos, vista detalle de hijo con todas las notas, sistema de notificaciones con filtro, estado financiero con pagos agrupados.</li>
+<li>Back-office administrativo: CRUD completo de alumnos, padres, periodos academicos, cursos y asignaciones. Dashboard con estadisticas reales. Matricula automatica por grado/seccion.</li>
+<li>Back-office de roles especializados: dashboard de secretaria (operativo), dashboard de director (supervision), CRUD de bitacora psicologica con privacidad total.</li>
+<li>Sistema de notificaciones automaticas mediante colas de trabajos: inasistencia, nota critica e incidencia de conducta.</li>
+<li>Exportacion de reportes academicos en formato Excel: libreta individual y reporte grupal de curso.</li>
+<li>Auditoria automatica de cambios en calificaciones mediante trigger de PostgreSQL.</li>
+<li>Interfaz responsiva con Tailwind CSS, componentes reutilizables y navegacion contextual por rol.</li>
+</ul>
+
+<h2>5.2 Pruebas Realizadas</h2>
+
+<p>El proyecto cuenta con un suite de pruebas automatizadas desarrollado con Pest que garantiza la calidad y confiabilidad del sistema:</p>
+
+<table>
+<tr><th>Metrica</th><th>Valor</th></tr>
+<tr><td>Total de tests</td><td>114</td></tr>
+<tr><td>Total de aserciones</td><td>279</td></tr>
+<tr><td>Estado</td><td>Todos pasando</td></tr>
+<tr><td>Cobertura</td><td>Flujos criticos de todos los ecosistemas</td></tr>
+</table>
+
+<p>Las pruebas cubren los siguientes ambitos:</p>
+
+<ul>
+<li>Ecosistema Alumno: dashboard, privacidad de notas, autorizacion de acceso a asignaciones.</li>
+<li>Ecosistema Padre: dashboard, visualizacion de hijos, notificaciones, pagos.</li>
+<li>Back-office Admin: CRUD de alumnos, padres, periodos, cursos, asignaciones.</li>
+<li>Ecosistema Psicologo: privacidad total de bitacora, autorizacion por psicologo_id.</li>
+<li>Notificaciones automaticas: dispatch de jobs al registrar asistencia, notas e incidencias.</li>
+<li>Reportes Excel: descarga para docente y admin.</li>
+<li>Integracion entre roles: autorizacion cruzada y validacion de permisos.</li>
+<li>Comportamiento especial: dashboard docente muestra cursos del lunes en fin de semana.</li>
+</ul>
+
+<h2>5.3 Conclusiones</h2>
+
+<p>El desarrollo de colegioFast ha cumplido satisfactoriamente con todos los objetivos planteados. El sistema resuelve el problema de la gestion academica manual proporcionando una plataforma centralizada, intuitiva y alineada al Curriculo Nacional de Educacion Basica del Peru.</p>
+
+<p>Entre los logros mas destacados se encuentran: la implementacion exitosa de la evaluacion por competencias con vinculacion a competencias y capacidades CNEB; el sistema de privacidad de notas que permite al docente controlar la visibilidad de las calificaciones de control pedagogico interno; la auditoria automatica de cambios mediante triggers de PostgreSQL que garantiza trazabilidad sin overhead en la aplicacion; y las notificaciones automaticas que mantienen informados a los padres sin requerir accion manual del docente.</p>
+
+<p>Desde el punto de vista tecnico, el proyecto demuestra el dominio de tecnologias modernas de desarrollo web (Laravel 13, PostgreSQL, Tailwind CSS, Alpine.js) y la aplicacion de buenas practicas de ingenieria de software como pruebas automatizadas, separacion de responsabilidades, y uso de patrones de diseno establecidos.</p>
+
+<p>El enfoque de "cada tarjeta es una pagina" con rutas reales de Blade, en lugar de un SPA basado en JavaScript, resulto en una aplicacion mas accesible, con mejor rendimiento inicial y mas facil de mantener. El uso minimal de Alpine.js solo para interacciones puntuales proporciona la reactividad necesaria sin la complejidad de un framework pesado.</p>
+
+<h2>5.4 Recomendaciones</h2>
+
+<p>Para futuras iteraciones del proyecto, se recomiendan las siguientes mejoras:</p>
+
+<ul>
+<li>Implementar un sistema de reportes estadisticos avanzados con graficos interactivos para el director.</li>
+<li>Agregar funcionalidad de comunicacion directa entre docentes y padres dentro del sistema.</li>
+<li>Desarrollar una aplicacion movil nativa o PWA para acceso mas comodo desde dispositivos moviles.</li>
+<li>Implementar integracion con el sistema SIAGIE del Ministerio de Educacion para reporte oficial de calificaciones.</li>
+<li>Agregar soporte para multiples instituciones educativas (multi-tenant) con configuracion independiente.</li>
+<li>Implementar backup automatico de la base de datos y sistema de recuperacion ante desastres.</li>
+<li>Realizar pruebas de carga y optimizacion de rendimiento para instituciones con alto numero de estudiantes.</li>
+</ul>
+
+<!-- ============================================ -->
+<!-- REFERENCIAS BIBLIOGRAFICAS -->
+<!-- ============================================ -->
+<h1>Referencias Bibliograficas</h1>
+
+<p class="reference">Laravel. (2026). <em>Laravel Documentation</em>. https://laravel.com/docs</p>
+
+<p class="reference">Ministerio de Educacion del Peru. (2016). <em>Curriculo Nacional de Educacion Basica</em>. Lima: MINEDU.</p>
+
+<p class="reference">Ministerio de Educacion del Peru. (2020). <em>Programa Curricular de Educacion Primaria</em>. Lima: MINEDU.</p>
+
+<p class="reference">OpenSpout. (2026). <em>OpenSpout Documentation</em>. https://opensource.spout.org/</p>
+
+<p class="reference">Pest. (2026). <em>Pest Documentation</em>. https://pestphp.com/docs/</p>
+
+<p class="reference">PHP Group. (2026). <em>PHP Manual</em>. https://www.php.net/manual/</p>
+
+<p class="reference">PostgreSQL Global Development Group. (2026). <em>PostgreSQL Documentation</em>. https://www.postgresql.org/docs/</p>
+
+<p class="reference">Tailwind Labs. (2026). <em>Tailwind CSS Documentation</em>. https://tailwindcss.com/docs</p>
+
+<p class="reference">Vite. (2026). <em>Vite Documentation</em>. https://vitejs.dev/</p>
+
+<!-- ============================================ -->
+<!-- ANEXOS -->
+<!-- ============================================ -->
+<h1>Anexos</h1>
+
+<h2>Anexo A: Estructura del Proyecto</h2>
+
+<p>La estructura de directorios del proyecto colegioFast sigue la convencion estandar de Laravel:</p>
+
+<p class="code-block">colegioFast/</p>
+<p class="code-block">&nbsp;&nbsp;app/</p>
+<p class="code-block">&nbsp;&nbsp;&nbsp;&nbsp;Enums/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(8 enums: UserRole, Calificacion, etc.)</p>
+<p class="code-block">&nbsp;&nbsp;&nbsp;&nbsp;Exports/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2 clases: LibretaNotasExport, ReporteCursoExport)</p>
+<p class="code-block">&nbsp;&nbsp;&nbsp;&nbsp;Http/</p>
+<p class="code-block">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Controllers/&nbsp;&nbsp;(23 controladores organizados por rol)</p>
+<p class="code-block">&nbsp;&nbsp;&nbsp;&nbsp;Jobs/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1 job: EnviarNotificacionJob)</p>
+<p class="code-block">&nbsp;&nbsp;&nbsp;&nbsp;Models/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(19 modelos Eloquent)</p>
+<p class="code-block">&nbsp;&nbsp;&nbsp;&nbsp;Services/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2 servicios: MatriculaService, NotificacionService)</p>
+<p class="code-block">&nbsp;&nbsp;database/</p>
+<p class="code-block">&nbsp;&nbsp;&nbsp;&nbsp;migrations/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(22 migraciones)</p>
+<p class="code-block">&nbsp;&nbsp;&nbsp;&nbsp;seeders/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(19 seeders)</p>
+<p class="code-block">&nbsp;&nbsp;resources/</p>
+<p class="code-block">&nbsp;&nbsp;&nbsp;&nbsp;views/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(vistas Blade organizadas por rol)</p>
+<p class="code-block">&nbsp;&nbsp;routes/</p>
+<p class="code-block">&nbsp;&nbsp;&nbsp;&nbsp;web.php&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(100+ rutas definidas)</p>
+<p class="code-block">&nbsp;&nbsp;tests/</p>
+<p class="code-block">&nbsp;&nbsp;&nbsp;&nbsp;Feature/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(114 tests Pest)</p>
+
+<h2>Anexo B: Rutas del Sistema</h2>
+
+<p>El sistema cuenta con mas de 100 rutas organizadas por ecosistema:</p>
+
+<table>
+<tr><th>Ecosistema</th><th>Cantidad de rutas</th><th>Prefijo</th></tr>
+<tr><td>Autenticacion</td><td>2</td><td>/login, /logout</td></tr>
+<tr><td>Docente</td><td>14</td><td>/docente</td></tr>
+<tr><td>Alumno</td><td>2</td><td>/alumno</td></tr>
+<tr><td>Padre</td><td>5</td><td>/padre</td></tr>
+<tr><td>Admin</td><td>35</td><td>/admin</td></tr>
+<tr><td>Secretaria</td><td>1</td><td>/secretaria</td></tr>
+<tr><td>Director</td><td>1</td><td>/director</td></tr>
+<tr><td>Psicologo</td><td>7</td><td>/psicologo</td></tr>
+<tr><td>Reportes</td><td>2</td><td>/admin/reportes, /docente/cursos/.../reporte</td></tr>
+</table>
+
+<h2>Anexo C: Requisitos de Evaluacion del Curso</h2>
+
+<p>El proyecto cumple con todos los requisitos de la rubrica de evaluacion del curso:</p>
+
+<table>
+<tr><th>#</th><th>Requisito</th><th>Cumplimiento</th></tr>
+<tr><td>1</td><td>Dolor del problema</td><td>Gestion escolar manual en Excel/papel sin trazabilidad</td></tr>
+<tr><td>1.1</td><td>Roles (minimo 3)</td><td>7 roles implementados</td></tr>
+<tr><td>2</td><td>Solucion</td><td>Sistema web centralizado con evaluacion por competencias CNEB</td></tr>
+<tr><td>3</td><td>MER (tablas, relaciones)</td><td>22 tablas con relaciones uno-muchos y muchos-muchos</td></tr>
+<tr><td>4</td><td>Laravel: Models, factory, seeders, belongsTo</td><td>19 modelos, 19 factories, 19 seeders</td></tr>
+<tr><td>5</td><td>Vista disenador de BD</td><td>PostgreSQL con 22 tablas, triggers y vistas</td></tr>
+<tr><td>6</td><td>Contrasenas encriptadas</td><td>bcrypt (Hash::make) - mas seguro que MD5</td></tr>
+<tr><td>7</td><td>Procedimiento, trigger</td><td>Trigger trg_auditoria_notas para auditoria automatica</td></tr>
+<tr><td>8</td><td>Exposicion 20 min + 5 preguntas</td><td>Pendiente preparar guion de demo</td></tr>
+<tr><td>9</td><td>Correccion de notas en el momento</td><td>UPDATE + trigger de auditoria</td></tr>
+<tr><td>10</td><td>Tono formal</td><td>Aplicado en todo el informe</td></tr>
+<tr><td>11</td><td>Informe de requerimientos</td><td>Este documento</td></tr>
+</table>
+
+</body>
+</html>

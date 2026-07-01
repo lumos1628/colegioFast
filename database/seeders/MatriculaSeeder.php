@@ -12,31 +12,25 @@ class MatriculaSeeder extends Seeder
 {
     public function run(): void
     {
-        $periodoActivo = PeriodoAcademico::where('activo', true)->first();
-
-        if (! $periodoActivo) {
-            return;
-        }
-
+        $periodos = PeriodoAcademico::all();
         $alumnos = Alumno::all();
-        $asignaciones = Asignacion::where('periodo_academico_id', $periodoActivo->id)
-            ->with('curso')
-            ->get();
 
-        foreach ($alumnos as $alumno) {
-            $asignacionesDelGrado = $asignaciones->filter(function ($asignacion) use ($alumno) {
-                return $asignacion->curso->grado == $alumno->grado
-                    && $asignacion->curso->seccion == $alumno->seccion;
-            });
+        foreach ($periodos as $periodo) {
+            $asignaciones = Asignacion::where('periodo_academico_id', $periodo->id)
+                ->with('curso')
+                ->get();
 
-            foreach ($asignacionesDelGrado as $asignacion) {
-                if (! Matricula::where('alumno_id', $alumno->id)
-                    ->where('asignacion_id', $asignacion->id)
-                    ->exists()) {
+            foreach ($alumnos as $alumno) {
+                $asignacionesDelGradoSeccion = $asignaciones->filter(function ($asignacion) use ($alumno) {
+                    return $asignacion->curso->grado == $alumno->grado
+                        && $asignacion->curso->seccion == $alumno->seccion;
+                });
+
+                foreach ($asignacionesDelGradoSeccion as $asignacion) {
                     Matricula::create([
                         'alumno_id' => $alumno->id,
                         'asignacion_id' => $asignacion->id,
-                        'fecha_matricula' => now()->startOfYear(),
+                        'fecha_matricula' => $periodo->fecha_inicio,
                         'estado' => 'activo',
                     ]);
                 }

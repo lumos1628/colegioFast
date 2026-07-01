@@ -20,7 +20,7 @@ class BitacoraPsicologicaSeeder extends Seeder
 
         $alumnos = Alumno::all();
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             BitacoraPsicologica::create([
                 'alumno_id' => $alumnos->random()->id,
                 'psicologo_id' => $psicologoUser->id,

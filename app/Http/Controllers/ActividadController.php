@@ -54,11 +54,30 @@ class ActividadController extends Controller
         $docente = $data['docente'];
         abort_if(! $docente || $asignacion->docente_id !== $docente->id, 403);
 
-        $asignacion->load('periodoAcademico');
-        $competencias = Competencia::with('capacidades')->get();
-        $proximasFechas = $asignacion->proximasFechasClase(3);
+        $asignacion->load(['periodoAcademico', 'curso']);
+        $competencias = Competencia::where('area_curricular', $asignacion->curso->area_curricular)
+            ->with('capacidades')
+            ->get();
+        $proximasFechas = $asignacion->proximasFechasClase(2);
 
-        return view('docente.actividades.create', array_merge($data, compact('asignacion', 'competencias', 'proximasFechas')));
+        $siguienteClase = $proximasFechas->first();
+        $subsiguienteClase = $proximasFechas->get(1);
+
+        $siguienteClaseFormateada = $siguienteClase
+            ? $siguienteClase->locale('es')->isoFormat('dddd, D [de] MMMM')
+            : null;
+        $subsiguienteClaseFormateada = $subsiguienteClase
+            ? $subsiguienteClase->locale('es')->isoFormat('dddd, D [de] MMMM')
+            : null;
+
+        return view('docente.actividades.create', array_merge($data, compact(
+            'asignacion',
+            'competencias',
+            'siguienteClase',
+            'subsiguienteClase',
+            'siguienteClaseFormateada',
+            'subsiguienteClaseFormateada'
+        )));
     }
 
     public function store(StoreActividadRequest $request, Asignacion $asignacion)
@@ -108,11 +127,31 @@ class ActividadController extends Controller
         abort_if(! $docente || $asignacion->docente_id !== $docente->id, 403);
         abort_if($actividad->asignacion_id !== $asignacion->id, 404);
 
-        $asignacion->load('periodoAcademico');
-        $competencias = Competencia::with('capacidades')->get();
-        $proximasFechas = $asignacion->proximasFechasClase(3);
+        $asignacion->load(['periodoAcademico', 'curso']);
+        $competencias = Competencia::where('area_curricular', $asignacion->curso->area_curricular)
+            ->with('capacidades')
+            ->get();
+        $proximasFechas = $asignacion->proximasFechasClase(2);
 
-        return view('docente.actividades.edit', array_merge($data, compact('asignacion', 'actividad', 'competencias', 'proximasFechas')));
+        $siguienteClase = $proximasFechas->first();
+        $subsiguienteClase = $proximasFechas->get(1);
+
+        $siguienteClaseFormateada = $siguienteClase
+            ? $siguienteClase->locale('es')->isoFormat('dddd, D [de] MMMM')
+            : null;
+        $subsiguienteClaseFormateada = $subsiguienteClase
+            ? $subsiguienteClase->locale('es')->isoFormat('dddd, D [de] MMMM')
+            : null;
+
+        return view('docente.actividades.edit', array_merge($data, compact(
+            'asignacion',
+            'actividad',
+            'competencias',
+            'siguienteClase',
+            'subsiguienteClase',
+            'siguienteClaseFormateada',
+            'subsiguienteClaseFormateada'
+        )));
     }
 
     public function update(StoreActividadRequest $request, Asignacion $asignacion, Actividad $actividad)
